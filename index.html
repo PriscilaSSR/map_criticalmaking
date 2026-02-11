@@ -1,92 +1,148 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AI Clusters: USA vs China</title>
+    <title>AI Global Influence Dashboard</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { margin: 0; background: #0b0b0b; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        #map { height: 100vh; width: 100vw; background: #0b0b0b; }
+        body { margin: 0; background: #050505; font-family: 'Inter', -apple-system, sans-serif; color: white; }
+        #map { height: 100vh; width: 100vw; background: #050505; }
         
-        .custom-legend {
+        /* Glassmorphism Control Panel */
+        .controls {
             position: absolute;
             top: 20px;
             left: 20px;
             z-index: 1000;
-            background: rgba(15, 15, 15, 0.85);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            color: white;
-            backdrop-filter: blur(8px);
+            background: rgba(20, 20, 20, 0.8);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            width: 280px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
 
-        h2 { margin: 0 0 10px 0; font-size: 18px; font-weight: 300; color: #00f2ff; text-transform: uppercase; letter-spacing: 2px; }
-        .item { margin: 8px 0; display: flex; align-items: center; font-size: 14px; }
-        .circle { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
-        
-        /* Glow animations for the points */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.5); opacity: 0.3; }
-            100% { transform: scale(1); opacity: 0.8; }
+        h2 { margin: 0 0 5px 0; font-size: 16px; font-weight: 600; letter-spacing: 1px; color: #fff; }
+        p { margin: 0 0 20px 0; font-size: 12px; color: #888; }
+
+        .metric-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #ccc;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
         }
+
+        .metric-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .metric-btn.active {
+            background: rgba(0, 242, 255, 0.15);
+            border-color: #00f2ff;
+            color: #00f2ff;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+        }
+
+        .legend { margin-top: 20px; font-size: 12px; border-top: 1px solid #333; padding-top: 15px; }
+        .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
+        .circle-key { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; }
     </style>
 </head>
 <body>
 
-<div class="custom-legend">
-    <h2>AI Hub Network</h2>
-    <div class="item"><div class="circle" style="background: #00f2ff; box-shadow: 0 0 8px #00f2ff;"></div> USA (Foundation Models)</div>
-    <div class="item"><div class="circle" style="background: #ff3e3e; box-shadow: 0 0 8px #ff3e3e;"></div> China (Hardware & Vertical AI)</div>
+<div class="controls">
+    <h2>AI INFLUENCE INDEX</h2>
+    <p>Select a metric to visualize power</p>
+    
+    <button class="metric-btn active" onclick="updateMap('investment')">💰 Investment Collected</button>
+    <button class="metric-btn" onclick="updateMap('evaluation')">🧪 Model Evaluation</button>
+    <button class="metric-btn" onclick="updateMap('users')">👥 User Numbers</button>
+    <button class="metric-btn" onclick="updateMap('gov')">🏛️ Government Contracts</button>
+
+    <div class="legend">
+        <div class="legend-item"><div class="circle-key" style="background: #00f2ff;"></div> USA Clusters</div>
+        <div class="legend-item"><div class="circle-key" style="background: #ff3e3e;"></div> China Clusters</div>
+    </div>
 </div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // Initialize map with a dark, minimalist theme
-    var map = L.map('map', {
-        zoomControl: false,
-        attributionControl: false
-    }).setView([30, 10], 3);
+    var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([30, 10], 3);
 
-    // Use CartoDB's Dark Matter tiles (No token required!)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
-    }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
+    // Data Structure: Values are relative for visualization (1-100 scale)
     const hubs = [
-        { name: "Silicon Valley", coords: [37.38, -122.08], country: "USA", info: "OpenAI, Meta, NVIDIA" },
-        { name: "Seattle", coords: [47.60, -122.33], country: "USA", info: "Microsoft, Amazon" },
-        { name: "New York", coords: [40.71, -74.00], country: "USA", info: "Hugging Face, Fintech AI" },
-        { name: "Beijing", coords: [39.90, 116.40], country: "China", info: "Baidu, ByteDance, Zhipu" },
-        { name: "Shenzhen", coords: [22.54, 114.05], country: "China", info: "Tencent, DJI, Huawei" },
-        { name: "Hangzhou", coords: [30.27, 120.15], country: "China", info: "Alibaba, Ant Group" }
+        { 
+            name: "Silicon Valley", country: "USA", coords: [37.38, -122.08],
+            investment: 100, evaluation: 95, users: 90, gov: 40 
+        },
+        { 
+            name: "Beijing", country: "China", coords: [39.90, 116.40],
+            investment: 70, evaluation: 85, users: 100, gov: 95 
+        },
+        { 
+            name: "Seattle", country: "USA", coords: [47.60, -122.33],
+            investment: 85, evaluation: 90, users: 80, gov: 60 
+        },
+        { 
+            name: "Shenzhen", country: "China", coords: [22.54, 114.05],
+            investment: 50, evaluation: 60, users: 85, gov: 80 
+        },
+        { 
+            name: "New York", country: "USA", coords: [40.71, -74.00],
+            investment: 65, evaluation: 70, users: 40, gov: 30 
+        }
     ];
 
-    hubs.forEach(hub => {
-        const color = hub.country === "USA" ? "#00f2ff" : "#ff3e3e";
-        
-        // Add a "Glow" effect using a simple CircleMarker
-        L.circleMarker(hub.coords, {
-            radius: 12,
-            fillColor: color,
-            color: color,
-            weight: 1,
-            fillOpacity: 0.2
-        }).addTo(map);
+    let layers = [];
 
-        // Add the solid center point
-        L.circleMarker(hub.coords, {
-            radius: 5,
-            fillColor: "white",
-            color: color,
-            weight: 2,
-            fillOpacity: 1
-        }).addTo(map)
-          .bindPopup(`<b style="color:#333">${hub.name}</b><br>${hub.info}`);
-    });
+    function updateMap(metric) {
+        // Clear existing layers
+        layers.forEach(l => map.removeLayer(l));
+        layers = [];
 
+        // Update Button Styles
+        document.querySelectorAll('.metric-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.innerText.toLowerCase().includes(metric.toLowerCase())) btn.classList.add('active');
+        });
+
+        hubs.forEach(hub => {
+            const color = hub.country === "USA" ? "#00f2ff" : "#ff3e3e";
+            const val = hub[metric];
+            
+            // Outer Glow (The "Influence" radius)
+            const glow = L.circleMarker(hub.coords, {
+                radius: val * 0.6, // Scaling factor
+                fillColor: color,
+                color: color,
+                weight: 1,
+                fillOpacity: 0.15
+            }).addTo(map);
+
+            // Inner Core
+            const core = L.circleMarker(hub.coords, {
+                radius: 4,
+                fillColor: "white",
+                color: color,
+                weight: 2,
+                fillOpacity: 1
+            }).addTo(map).bindPopup(`<b>${hub.name}</b><br>${metric.toUpperCase()} Score: ${val}`);
+
+            layers.push(glow, core);
+        });
+    }
+
+    // Initial Load
+    updateMap('investment');
 </script>
 </body>
 </html>
