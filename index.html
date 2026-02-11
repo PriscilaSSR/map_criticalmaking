@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI WAR CHEST | 2026 INTELLIGENCE</title>
+    <title>AI WAR CHEST | SHENZHEN ACTIVATED</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -68,7 +68,7 @@
         .stat-label { width: 70px; color: #888; text-align: right; padding-right: 10px; }
         .bar-track { flex-grow: 1; background: #222; height: 4px; position: relative; }
         .bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
-        .stat-val { width: 70px; padding-left: 10px; font-weight: bold; }
+        .stat-val { width: 80px; padding-left: 10px; font-weight: bold; }
 
         /* COLOR CODING CLASSES */
         .c-money { background: var(--money-color); box-shadow: 0 0 8px var(--money-color); }
@@ -123,7 +123,7 @@
         <span>LIQUID CAPITAL & FIREPOWER // 2026 LIVE DATA</span>
     </div>
     <div style="text-align: right; font-size: 10px;">
-        <div style="color: var(--money-color);">■ CASH TO BURN (USD)</div>
+        <div style="color: var(--money-color);">■ WAR CHEST (USD)</div>
         <div style="color: var(--compute-color);">■ COMPUTE (H100 EQ)</div>
         <div style="color: var(--user-color);">■ USER BASE (MAU)</div>
     </div>
@@ -142,9 +142,6 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     // 1. DATA INTELLIGENCE
-    // "money" = Cash on Hand / Recent Raise / Allocated Capex (The actual spending power)
-    // "compute" = Estimated H100 equivalent clusters
-    // "users" = MAU (Monthly Active Users) or WAU
     const data = [
         // --- USA ---
         {
@@ -183,20 +180,31 @@
             source: "https://www.macrotrends.net/stocks/charts/META/meta-platforms/cash-on-hand",
             desc: "Stockpiled 600k H100s. $81B Cash on Hand + $123B Capex budget."
         },
-        {
-            name: "Anthropic", country: "US", lat: 37.78, lng: -122.40,
-            money: 13000000000, moneyDisplay: "$13B (Cash)",
-            compute: 150000, computeDisplay: "AWS Trainium",
-            users: 19000000, usersDisplay: "19M MAU",
-            tech: "Claude 3.5 Sonnet",
-            source: "https://backlinko.com/claude-users",
-            desc: "Raised $10B Jan '26. High cash burn, high performance."
-        },
 
-        // --- CHINA ---
+        // --- SHENZHEN (NEW ADDS) ---
         {
-            name: "DeepSeek", country: "CN", lat: 30.27, lng: 120.15,
-            money: 6000000, moneyDisplay: "$6M (Training Cost)",
+            name: "Huawei (Shenzhen)", country: "CN", lat: 22.65, lng: 114.06,
+            money: 25000000000, moneyDisplay: "$25B (R&D)",
+            compute: 200000, computeDisplay: "Ascend 910C",
+            users: 800000000, usersDisplay: "Enterprise/Gov",
+            tech: "Pangu 5.0",
+            source: "https://www.huawei.com/en/ipr",
+            desc: "THE HARDWARE FORTRESS. Investing $25B/yr in R&D. Producing 1.6M Ascend chips/yr."
+        },
+        {
+            name: "Tencent (Shenzhen)", country: "CN", lat: 22.54, lng: 113.93,
+            money: 66000000000, moneyDisplay: "$66B (Cash)",
+            compute: 80000, computeDisplay: "Hunyuan Cluster",
+            users: 1300000000, usersDisplay: "1.3B (WeChat)",
+            tech: "Hunyuan Video",
+            source: "https://www.static.www.tencent.com/uploads/2025/05/14/ee0333e84ef3636e45bd394cd0815f08.pdf",
+            desc: "The Sleeping Giant. $66B Cash on hand. Hunyuan Video is SOTA."
+        },
+        
+        // --- CHINA (REST) ---
+        {
+            name: "DeepSeek (Hangzhou)", country: "CN", lat: 30.27, lng: 120.15,
+            money: 6000000, moneyDisplay: "$6M (Train Cost)",
             compute: 2048, computeDisplay: "2k H800s",
             users: 96000000, usersDisplay: "96M MAU",
             tech: "DeepSeek-R1",
@@ -211,24 +219,6 @@
             tech: "Qwen 2.5",
             source: "https://www.macrotrends.net/stocks/charts/BABA/alibaba/cash-on-hand",
             desc: "Massive R&D budget. Qwen is the Llama of China."
-        },
-        {
-            name: "Tencent", country: "CN", lat: 22.54, lng: 113.93,
-            money: 55000000000, moneyDisplay: "$55B (Cash)",
-            compute: 80000, computeDisplay: "Hunyuan Cluster",
-            users: 1300000000, usersDisplay: "1.3B (WeChat)",
-            tech: "Hunyuan",
-            source: "https://www.statista.com/statistics/272014/global-social-networks-ranked-by-number-of-users/",
-            desc: "Integrating AI into WeChat. Massive distribution advantage."
-        },
-        {
-            name: "Moonshot AI", country: "CN", lat: 39.92, lng: 116.45,
-            money: 1770000000, moneyDisplay: "$1.77B (Funding)",
-            compute: 10000, computeDisplay: "Cloud Rental",
-            users: 20000000, usersDisplay: "Top Consumer App",
-            tech: "Kimi Chat",
-            source: "https://tracxn.com/d/companies/moonshot-ai",
-            desc: "Jan '26 Series C. Kimi is the #1 consumer chatbot in China."
         }
     ];
 
@@ -237,7 +227,6 @@
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap, © CARTO' }).addTo(map);
 
     // 3. SCALING LOGIC
-    // We need to normalize bars so they fit the UI.
     const maxMoney = Math.max(...data.map(d => d.money));
     const maxCompute = Math.max(...data.map(d => d.compute));
     const maxUsers = Math.max(...data.map(d => d.users));
@@ -322,6 +311,7 @@
     // Draw connection lines
     L.polyline([[37.77, -122.41], [35.14, -90.04]], { color: '#00f2ff', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
     L.polyline([[39.90, 116.40], [30.27, 120.15]], { color: '#ff2a2a', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
+    L.polyline([[30.27, 120.15], [22.54, 113.93]], { color: '#ff2a2a', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
 
 </script>
 </body>
