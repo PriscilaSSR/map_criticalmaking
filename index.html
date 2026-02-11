@@ -3,114 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI WAR CHEST | SHENZHEN ACTIVATED</title>
+    <title>AI COMMAND CENTER | 2026</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --us-color: #00f2ff;
             --cn-color: #ff2a2a;
-            --money-color: #00ff41;  /* Matrix Green for Cash */
-            --compute-color: #00b8ff; /* Blue for Compute */
-            --user-color: #d600ff;    /* Purple for Users */
+            --money-color: #00ff41;
+            --compute-color: #00b8ff;
+            --user-color: #d600ff;
             --bg-dark: #050505;
-            --panel-bg: rgba(10, 10, 10, 0.95);
-            --border: 1px solid #333;
+            --panel-bg: rgba(12, 12, 12, 0.95);
+            --border: 1px solid rgba(255,255,255,0.15);
         }
 
         body { margin: 0; background: var(--bg-dark); font-family: 'JetBrains Mono', monospace; color: #e0e0e0; overflow: hidden; }
         
-        #map { height: 100vh; width: 100vw; z-index: 1; filter: grayscale(100%) contrast(1.1) brightness(0.7); }
+        #map { height: 100vh; width: 100vw; z-index: 1; filter: grayscale(100%) contrast(1.2) brightness(0.6); }
 
-        /* GRID OVERLAY */
+        /* HUD OVERLAY */
         body::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none; z-index: 2;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 2;
         }
 
         /* --- UI PANELS --- */
-        .panel {
-            position: absolute; z-index: 1000; background: var(--panel-bg);
-            border: var(--border); backdrop-filter: blur(5px);
-        }
+        .panel { position: absolute; z-index: 1000; background: var(--panel-bg); border: var(--border); backdrop-filter: blur(10px); }
 
-        /* TOP HEADER */
+        /* HEADER */
         .header {
             top: 20px; left: 20px; right: 20px; height: 60px;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; border-bottom: 2px solid var(--money-color);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 25px;
+            border-bottom: 2px solid var(--money-color);
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
         }
-        .title-group h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #fff; text-transform: uppercase; }
-        .title-group span { font-size: 10px; color: var(--money-color); letter-spacing: 1px; }
+        .title h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #fff; text-transform: uppercase; }
 
-        /* SIDEBAR (THE DOSSIER) */
+        /* METRIC TOGGLES */
+        .metric-toggles { display: flex; gap: 8px; }
+        .m-btn {
+            background: rgba(0,0,0,0.6); border: 1px solid #333; color: #777;
+            padding: 8px 14px; cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 700;
+            transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .m-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .m-btn.active.money { border-color: var(--money-color); color: var(--money-color); background: rgba(0, 255, 65, 0.05); box-shadow: 0 0 10px rgba(0, 255, 65, 0.15); }
+        .m-btn.active.compute { border-color: var(--compute-color); color: var(--compute-color); background: rgba(0, 184, 255, 0.05); box-shadow: 0 0 10px rgba(0, 184, 255, 0.15); }
+        .m-btn.active.users { border-color: var(--user-color); color: var(--user-color); background: rgba(214, 0, 255, 0.05); box-shadow: 0 0 10px rgba(214, 0, 255, 0.15); }
+
+        /* SIDEBAR LIST */
         .dossier {
-            top: 100px; right: 20px; bottom: 30px; width: 400px;
-            overflow-y: auto; padding: 0; display: flex; flex-direction: column;
+            top: 100px; right: 20px; bottom: 30px; width: 380px;
+            overflow-y: auto; display: flex; flex-direction: column; gap: 4px;
         }
-
-        /* CARD STYLES */
         .card {
-            padding: 15px; border-bottom: 1px solid #222;
-            transition: background 0.2s; cursor: crosshair;
+            padding: 12px 15px; border-bottom: 1px solid #222; cursor: pointer;
+            transition: all 0.2s; position: relative; overflow: hidden;
+            background: rgba(255,255,255,0.02);
         }
-        .card:hover { background: rgba(255,255,255,0.05); }
+        .card:hover { background: rgba(255,255,255,0.06); border-left: 2px solid #fff; }
         
-        .card-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
-        .card-name { font-size: 14px; font-weight: 700; color: #fff; }
-        .card-loc { font-size: 9px; color: #666; text-transform: uppercase; }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .card-name { font-size: 13px; font-weight: 800; color: #fff; }
+        .card-val { font-size: 14px; font-weight: 800; font-family: 'JetBrains Mono'; }
         
-        .stat-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 10px; }
-        .stat-label { width: 70px; color: #888; text-align: right; padding-right: 10px; }
-        .bar-track { flex-grow: 1; background: #222; height: 4px; position: relative; }
-        .bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
-        .stat-val { width: 80px; padding-left: 10px; font-weight: bold; }
-
-        /* COLOR CODING CLASSES */
-        .c-money { background: var(--money-color); box-shadow: 0 0 8px var(--money-color); }
-        .t-money { color: var(--money-color); }
+        .card-meta { font-size: 10px; color: #888; margin-bottom: 6px; display: flex; gap: 10px; }
+        .meta-tag { background: #222; padding: 2px 6px; border-radius: 3px; color: #ccc; }
         
-        .c-compute { background: var(--compute-color); }
-        .t-compute { color: var(--compute-color); }
-        
-        .c-user { background: var(--user-color); }
-        .t-user { color: var(--user-color); }
+        .card-desc { font-size: 10px; color: #666; line-height: 1.4; margin-bottom: 6px; }
+        .source-link { font-size: 9px; color: #444; text-decoration: none; border-bottom: 1px dotted #444; transition: 0.2s; }
+        .source-link:hover { color: #fff; border-color: #fff; }
 
-        .flag-us { border-left: 3px solid var(--us-color); }
-        .flag-cn { border-left: 3px solid var(--cn-color); }
+        /* FILTERS (LEFT) */
+        .controls { top: 100px; left: 20px; display: flex; flex-direction: column; gap: 5px; width: 130px; padding: 10px; }
+        .f-btn {
+            background: transparent; border: 1px solid #333; color: #666; padding: 8px;
+            cursor: pointer; text-align: left; font-family: inherit; font-size: 10px; text-transform: uppercase;
+        }
+        .f-btn:hover, .f-btn.active { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); }
 
-        /* FILTERS */
-        .controls {
-            top: 100px; left: 20px; width: 140px;
-            display: flex; flex-direction: column; gap: 5px; padding: 10px;
+        /* MAP BUBBLES */
+        .bubble-label {
+            background: rgba(0,0,0,0.9); color: #fff; padding: 4px 8px; border-radius: 2px;
+            font-size: 10px; border: 1px solid #444; white-space: nowrap; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
-        .btn {
-            background: transparent; border: 1px solid #444; color: #888;
-            padding: 8px; font-family: inherit; font-size: 10px; cursor: pointer;
-            text-align: left; transition: all 0.2s; text-transform: uppercase;
-        }
-        .btn:hover, .btn.active { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); }
-
-        /* MARKERS */
-        .marker-dot {
-            width: 12px; height: 12px; border-radius: 50%;
-            background: #000; border: 2px solid #fff;
-            box-shadow: 0 0 10px #fff;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-
-        /* POPUP */
-        .leaflet-popup-content-wrapper {
-            background: rgba(5,5,5,0.95); border: 1px solid #fff;
-            color: #fff; border-radius: 2px; font-family: 'JetBrains Mono';
-        }
-        .source-link { font-size: 9px; color: #555; text-decoration: none; display: block; margin-top: 5px; }
-        .source-link:hover { color: var(--money-color); }
     </style>
 </head>
 <body>
@@ -118,270 +97,273 @@
 <div id="map"></div>
 
 <div class="panel header">
-    <div class="title-group">
-        <h1>Global AI War Chests</h1>
-        <span>LIQUID CAPITAL & FIREPOWER // 2026 LIVE DATA</span>
+    <div class="title">
+        <h1>AI War Room</h1>
     </div>
-    <div style="text-align: right; font-size: 10px;">
-        <div style="color: var(--money-color);">■ WAR CHEST (USD)</div>
-        <div style="color: var(--compute-color);">■ COMPUTE (H100 EQ)</div>
-        <div style="color: var(--user-color);">■ USER BASE (MAU)</div>
+    <div class="metric-toggles">
+        <button class="m-btn active money" onclick="setMode('money')"><span>$</span> War Chest</button>
+        <button class="m-btn compute" onclick="setMode('compute')"><span>⚡</span> Compute</button>
+        <button class="m-btn users" onclick="setMode('users')"><span>👥</span> Users</button>
     </div>
 </div>
 
 <div class="panel controls">
-    <div style="font-size:9px; color:#666; margin-bottom:5px;">SECTOR CONTROL</div>
-    <button class="btn active" onclick="render('all')">View All</button>
-    <button class="btn" onclick="render('US')">USA (Big Spend)</button>
-    <button class="btn" onclick="render('CN')">China (Efficiency)</button>
+    <div style="font-size:9px; color:#666; margin-bottom:5px;">SECTOR</div>
+    <button class="f-btn active" onclick="setFilter('all')">Global View</button>
+    <button class="f-btn" onclick="setFilter('US')">USA Forces</button>
+    <button class="f-btn" onclick="setFilter('CN')">China Forces</button>
 </div>
 
-<div class="panel dossier" id="dossier">
-    </div>
+<div class="panel dossier" id="dossier"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-   // --- UPDATED INTELLIGENCE DATABASE (V3.1) ---
+    // --- 1. DEEP INTELLIGENCE DATABASE (V5) ---
+    // Combined visuals (val) with deep data (tech, source, desc)
     const data = [
-        // === USA: THE BIG SPENDERS ===
-        {
-            name: "Microsoft AI", country: "US", lat: 47.67, lng: -122.12,
-            money: 80000000000, moneyDisplay: "$80B (Capex)",
-            compute: 400000, computeDisplay: "Azure Stargate",
-            users: 1500000000, usersDisplay: "Copilot / 365",
-            tech: "Phi-4 / Internal",
-            source: "https://www.microsoft.com/en-us/investor",
-            desc: "Mustafa Suleyman's division. Building 'internal' AGI separate from OpenAI."
+        // === USA ===
+        { 
+            name: "Microsoft AI", country: "US", lat: 47.67, lng: -122.12, 
+            money: 80, moneyStr: "$80B (Capex)",
+            compute: 400, computeStr: "400k H100s",
+            users: 1500, usersStr: "1.5B (Copilot)",
+            tech: "Phi-4 / OpenAI",
+            source: "https://www.microsoft.com/investor",
+            desc: "Mustafa Suleyman warns of 'hundreds of billions' needed. Building Stargate."
         },
-        {
-            name: "Amazon AGI", country: "US", lat: 47.60, lng: -122.33,
-            money: 75000000000, moneyDisplay: "$75B (Capex)",
-            compute: 300000, computeDisplay: "Olympus Cluster",
-            users: 400000000, usersDisplay: "AWS Bedrock",
+        { 
+            name: "Amazon AGI", country: "US", lat: 47.60, lng: -122.33, 
+            money: 75, moneyStr: "$75B (Inv)",
+            compute: 300, computeStr: "300k Trainium",
+            users: 400, usersStr: "400M (AWS)",
             tech: "Olympus / Nova",
-            source: "https://www.aboutamazon.com/news/aws",
-            desc: "The 'Olympus' model team. Massive investment in Sovereign Cloud."
+            source: "https://aws.amazon.com",
+            desc: "The 'Olympus' model team. Massive $50B+ investment in data centers."
         },
-        {
-            name: "Google DeepMind", country: "US", lat: 37.40, lng: -122.08,
-            money: 185000000000, moneyDisplay: "$185B (Capex)",
-            compute: 500000, computeDisplay: "TPU v5p Pods",
-            users: 2000000000, usersDisplay: "2B+ (Workspace)",
+        { 
+            name: "Google DeepMind", country: "US", lat: 37.40, lng: -122.08, 
+            money: 185, moneyStr: "$185B (Capex)",
+            compute: 500, computeStr: "500k TPUs",
+            users: 2000, usersStr: "2B+ (Gemini)",
             tech: "Gemini 1.5 Pro",
-            source: "https://abc.xyz/investor/",
-            desc: "The limitless budget. Merged Brain & DeepMind to accelerate Gemini."
+            source: "https://abc.xyz",
+            desc: "Merged Brain & DeepMind. Largest compute stockpile in existence."
         },
-        {
-            name: "Meta FAIR", country: "US", lat: 37.45, lng: -122.15,
-            money: 125000000000, moneyDisplay: "$125B (Capex)",
-            compute: 600000, computeDisplay: "600k H100s",
-            users: 3000000000, usersDisplay: "3B+ (Family)",
+        { 
+            name: "Meta FAIR", country: "US", lat: 37.45, lng: -122.15, 
+            money: 125, moneyStr: "$125B (Capex)",
+            compute: 600, computeStr: "600k H100s",
+            users: 3000, usersStr: "3B+ (Family)",
             tech: "Llama 4",
-            source: "https://investor.fb.com/",
-            desc: "Open weights champion. Owning the 'standard' for research."
+            source: "https://ai.meta.com",
+            desc: "Open weights champion. Mark Z is trading cash for standard-setting."
         },
-        {
-            name: "OpenAI", country: "US", lat: 37.76, lng: -122.42,
-            money: 22000000000, moneyDisplay: "$22B (Liquid)",
-            compute: 350000, computeDisplay: "Azure West US",
-            users: 800000000, usersDisplay: "800M WAU",
+        { 
+            name: "OpenAI", country: "US", lat: 37.76, lng: -122.42, 
+            money: 22, moneyStr: "$22B (Liquid)",
+            compute: 350, computeStr: "350k H100s",
+            users: 800, usersStr: "800M (ChatGPT)",
             tech: "GPT-5 / o3",
-            source: "https://openai.com/news",
-            desc: "The highest valued private company. Burning cash for scale."
+            source: "https://openai.com",
+            desc: "Highest valued private company. Burning cash to reach AGI first."
         },
-        {
-            name: "xAI", country: "US", lat: 35.14, lng: -90.04,
-            money: 20000000000, moneyDisplay: "$20B (Cash)",
-            compute: 100000, computeDisplay: "Colossus (Memphis)",
-            users: 500000000, usersDisplay: "X Platform",
+        { 
+            name: "xAI", country: "US", lat: 35.14, lng: -90.04, 
+            money: 20, moneyStr: "$20B (Cash)",
+            compute: 100, computeStr: "100k Colossus",
+            users: 500, usersStr: "500M (X)",
             tech: "Grok 3",
-            source: "https://x.ai/blog",
-            desc: "Built the world's largest single cluster in 122 days."
+            source: "https://x.ai",
+            desc: "Built the Memphis Supercluster in 122 days. Pure brute force."
         },
-        {
-            name: "Anthropic", country: "US", lat: 37.78, lng: -122.39, // Offset from OpenAI
-            money: 13000000000, moneyDisplay: "$13B (Cash)",
-            compute: 150000, computeDisplay: "AWS Trainium",
-            users: 20000000, usersDisplay: "Enterprise",
+        { 
+            name: "Anthropic", country: "US", lat: 37.78, lng: -122.39, 
+            money: 13, moneyStr: "$13B (Cash)",
+            compute: 150, computeStr: "150k Trainium",
+            users: 20, usersStr: "20M (Ent)",
             tech: "Claude 3.5",
-            source: "https://www.anthropic.com",
-            desc: "Safety-first. Heavily funded by Amazon ($4B) and Google ($2B)."
-        },
-        {
-            name: "NVIDIA Research", country: "US", lat: 37.37, lng: -121.96,
-            money: 30000000000, moneyDisplay: "$30B (R&D)",
-            compute: 50000, computeDisplay: "Eos Supercomputer",
-            users: 5000000, usersDisplay: "Dev Community",
-            tech: "Nemotron 3",
-            source: "https://nvidianews.nvidia.com/",
-            desc: "Not just chips. Quietly releasing SOTA open models (Nemotron)."
+            source: "https://anthropic.com",
+            desc: "Safety-focused. Heavy backing from Amazon/Google."
         },
 
-        // === CHINA: THE NEW CONSUMER KINGS ===
-        {
-            name: "ByteDance", country: "CN", lat: 39.98, lng: 116.32,
-            money: 22800000000, moneyDisplay: "$22.8B (AI Budget)",
-            compute: 100000, computeDisplay: "Huawei/Nvidia Mix",
-            users: 1500000000, usersDisplay: "Douyin/TikTok",
+        // === CHINA ===
+        { 
+            name: "ByteDance", country: "CN", lat: 39.98, lng: 116.32, 
+            money: 22.8, moneyStr: "$22.8B (AI)",
+            compute: 100, computeStr: "100k Mixed",
+            users: 1500, usersStr: "1.5B (Douyin)",
             tech: "Doubao",
-            source: "https://www.bytedance.com",
-            desc: "The Consumer King. 'Doubao' is the #1 AI app in China."
+            source: "https://bytedance.com",
+            desc: "Doubao is #1 in China. Leveraging TikTok's massive user feedback loop."
         },
-        {
-            name: "Baidu", country: "CN", lat: 40.05, lng: 116.28,
-            money: 18000000000, moneyDisplay: "$18B (R&D)",
-            compute: 80000, computeDisplay: "Kunlun Chips",
-            users: 200000000, usersDisplay: "200M MAU",
-            tech: "Ernie 4.0",
-            source: "https://ir.baidu.com",
-            desc: "The Google of China. Ernie Bot has massive penetration."
-        },
-        {
-            name: "Tencent", country: "CN", lat: 22.54, lng: 113.93,
-            money: 66000000000, moneyDisplay: "$66B (Cash)",
-            compute: 80000, computeDisplay: "Hunyuan Cluster",
-            users: 1300000000, usersDisplay: "WeChat Integ.",
-            tech: "Hunyuan Video",
-            source: "https://tencent.com",
-            desc: "Sleeping giant. Using AI to power WeChat and Gaming."
-        },
-        {
-            name: "Huawei", country: "CN", lat: 22.65, lng: 114.06,
-            money: 25000000000, moneyDisplay: "$25B (R&D)",
-            compute: 200000, computeDisplay: "Ascend 910C",
-            users: 800000000, usersDisplay: "Gov/Enterprise",
+        { 
+            name: "Huawei", country: "CN", lat: 22.65, lng: 114.06, 
+            money: 25, moneyStr: "$25B (R&D)",
+            compute: 200, computeStr: "200k Ascend",
+            users: 800, usersStr: "800M (Ent)",
             tech: "Pangu 5.0",
             source: "https://huawei.com",
-            desc: "The Hardware Fortress. Building China's sovereign compute stack."
+            desc: "Producing 600k Ascend 910C chips in 2026 to bypass sanctions."
         },
-        {
-            name: "DeepSeek", country: "CN", lat: 30.27, lng: 120.15,
-            money: 6000000, moneyDisplay: "$6M (Train Cost)",
-            compute: 2048, computeDisplay: "2k H800s",
-            users: 96000000, usersDisplay: "96M MAU",
+        { 
+            name: "Tencent", country: "CN", lat: 22.54, lng: 113.93, 
+            money: 66, moneyStr: "$66B (Cash)",
+            compute: 80, computeStr: "80k Hunyuan",
+            users: 1300, usersStr: "1.3B (WeChat)",
+            tech: "Hunyuan Video",
+            source: "https://tencent.com",
+            desc: "Deep pockets ($66B cash). Integrating AI into WeChat ecosystem."
+        },
+        { 
+            name: "DeepSeek", country: "CN", lat: 30.27, lng: 120.15, 
+            money: 0.006, moneyStr: "$6M (Train)",
+            compute: 2, computeStr: "2k H800s",
+            users: 96, usersStr: "96M (App)",
             tech: "DeepSeek-R1",
             source: "https://deepseek.com",
-            desc: "The disruptor. Shockingly efficient. The 'Linux' of LLMs?"
+            desc: "The efficiency anomaly. Trained V3 on just $6M. The 'Linux' of AI."
         },
-        {
-            name: "Alibaba Cloud", country: "CN", lat: 30.25, lng: 120.20,
-            money: 85000000000, moneyDisplay: "$85B (Cash)",
-            compute: 100000, computeDisplay: "Apsara Cloud",
-            users: 600000000, usersDisplay: "Enterprise",
+        { 
+            name: "Alibaba", country: "CN", lat: 30.25, lng: 120.20, 
+            money: 85, moneyStr: "$85B (Cash)",
+            compute: 100, computeStr: "100k Apsara",
+            users: 600, usersStr: "600M (Cloud)",
             tech: "Qwen 2.5",
             source: "https://alibabacloud.com",
-            desc: "Qwen is the leading 'Open Weights' model from China."
+            desc: "Leading open-weights model in China. Massive cloud infrastructure."
         },
-        {
-            name: "MiniMax", country: "CN", lat: 31.23, lng: 121.47,
-            money: 11400000000, moneyDisplay: "$11.4B (Valuation)",
-            compute: 15000, computeDisplay: "Cloud Rental",
-            users: 40000000, usersDisplay: "Character AI",
+        { 
+            name: "MiniMax", country: "CN", lat: 31.23, lng: 121.47, 
+            money: 11.4, moneyStr: "$11.4B (Val)",
+            compute: 15, computeStr: "15k GPUs",
+            users: 40, usersStr: "40M (Char)",
             tech: "abab 6.5",
             source: "https://hkex.com.hk",
-            desc: "Just IPO'd in Hong Kong (Jan '26). Massive valuation bump."
+            desc: "IPO'd Jan '26 in HK. Focus on Character AI and RPGs."
         },
-        {
-            name: "Zhipu AI", country: "CN", lat: 39.99, lng: 116.33,
-            money: 4400000000, moneyDisplay: "$4.4B (Valuation)",
-            compute: 12000, computeDisplay: "SuperGLM",
-            users: 25000000, usersDisplay: "Academic/Gov",
+        { 
+            name: "Zhipu AI", country: "CN", lat: 39.99, lng: 116.33, 
+            money: 4.4, moneyStr: "$4.4B (Val)",
+            compute: 12, computeStr: "12k GPUs",
+            users: 25, usersStr: "25M (Gov)",
             tech: "GLM-4",
             source: "https://hkex.com.hk",
-            desc: "IPO'd Jan '26. The 'OpenAI' of China (Tsinghua spin-off)."
+            desc: "Academic powerhouse (Tsinghua). Strong government contracts."
         }
     ];
 
-    // 2. MAP SETUP
+    // --- 2. STATE CONFIG ---
+    let currentMode = 'money';
+    let currentFilter = 'all';
+    
+    const modes = {
+        money: { color: '#00ff41', key: 'money', label: 'WAR CHEST', unit: 'B', max: 185, strKey: 'moneyStr' },
+        compute: { color: '#00b8ff', key: 'compute', label: 'COMPUTE', unit: 'k', max: 600, strKey: 'computeStr' },
+        users: { color: '#d600ff', key: 'users', label: 'USERS', unit: 'M', max: 3000, strKey: 'usersStr' }
+    };
+
+    // --- 3. MAP ENGINE ---
     const map = L.map('map', { zoomControl: false, center: [35, 175], zoom: 3, minZoom: 2 });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap, © CARTO' }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+    const markersLayer = L.layerGroup().addTo(map);
 
-    // 3. SCALING LOGIC
-    const maxMoney = Math.max(...data.map(d => d.money));
-    const maxCompute = Math.max(...data.map(d => d.compute));
-    const maxUsers = Math.max(...data.map(d => d.users));
+    // --- 4. RENDERER ---
+    function render() {
+        markersLayer.clearLayers();
+        const dossier = document.getElementById('dossier');
+        dossier.innerHTML = '';
+        const cfg = modes[currentMode];
+        
+        // Sort DESC
+        const sortedData = [...data].sort((a, b) => b[cfg.key] - a[cfg.key]);
 
-    function render(filter) {
-        // Clear existing
-        document.getElementById('dossier').innerHTML = '';
-        map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
+        sortedData.forEach(d => {
+            if (currentFilter !== 'all' && d.country !== currentFilter) return;
 
-        data.forEach(d => {
-            if (filter !== 'all' && d.country !== filter) return;
+            // BUBBLE SIZE
+            const val = d[cfg.key];
+            let radius = Math.sqrt(val / cfg.max) * 60; 
+            if (radius < 5) radius = 5; 
 
-            const color = d.country === 'US' ? '#00f2ff' : '#ff2a2a';
-            const flagClass = d.country === 'US' ? 'flag-us' : 'flag-cn';
-
-            // MARKER
-            const icon = L.divIcon({
-                className: 'custom',
-                html: `<div class="marker-dot" style="border-color:${color}; box-shadow:0 0 10px ${color}"></div>`,
-                iconSize: [12, 12]
+            // MAP MARKER
+            const circle = L.circleMarker([d.lat, d.lng], {
+                radius: radius,
+                fillColor: cfg.color, color: cfg.color, weight: 1, opacity: 0.8, fillOpacity: 0.15
             });
 
-            L.marker([d.lat, d.lng], { icon: icon }).addTo(map).bindPopup(`
-                <div style="min-width:200px">
-                    <strong style="color:${color}; font-size:14px">${d.name}</strong><br>
-                    <div style="font-size:10px; color:#aaa; margin-top:5px">${d.desc}</div>
-                    <hr style="border:0; border-top:1px solid #333; margin:8px 0">
-                    <div style="font-size:11px">
-                        <span style="color:var(--money-color)">$</span> ${d.moneyDisplay}<br>
-                        <span style="color:var(--compute-color)">GPU</span> ${d.computeDisplay}<br>
-                        <span style="color:var(--user-color)">USR</span> ${d.usersDisplay}
-                    </div>
-                    <a href="${d.source}" target="_blank" class="source-link">🔗 VERIFY DATA</a>
+            // HOVER TOOLTIP
+            circle.bindTooltip(`
+                <div style="text-align:center">
+                    <div style="font-weight:800; color:${cfg.color}">${d.name}</div>
+                    <div style="font-size:10px">${d[cfg.strKey]}</div>
                 </div>
-            `);
+            `, { permanent: false, direction: "top", className: "bubble-label" });
+
+            // POPUP WITH RICH DATA
+            const popupContent = `
+                <div style="min-width:200px">
+                    <h3 style="margin:0; color:${cfg.color}">${d.name}</h3>
+                    <div style="font-size:10px; color:#aaa; margin-bottom:8px">${d.country === 'US' ? 'UNITED STATES' : 'CHINA'}</div>
+                    <div style="font-size:12px; font-weight:bold; margin-bottom:5px">${d.tech}</div>
+                    <p style="font-size:11px; margin:0 0 8px 0; line-height:1.4">${d.desc}</p>
+                    <div style="background:rgba(255,255,255,0.1); padding:5px; border-radius:4px; font-size:11px">
+                        <strong>${cfg.label}:</strong> <span style="color:${cfg.color}">${d[cfg.strKey]}</span>
+                    </div>
+                </div>
+            `;
+            circle.bindPopup(popupContent);
+            circle.on('click', () => map.flyTo([d.lat, d.lng], 6));
+            circle.addTo(markersLayer);
 
             // SIDEBAR CARD
             const card = document.createElement('div');
-            card.className = `card ${flagClass}`;
-            card.onclick = () => map.flyTo([d.lat, d.lng], 10);
-            
-            // Calc Percentages
-            const pctMoney = (d.money / maxMoney) * 100;
-            const pctCompute = (d.compute / maxCompute) * 100;
-            const pctUsers = (d.users / maxUsers) * 100;
-
+            card.className = 'card';
             card.innerHTML = `
-                <div class="card-header">
-                    <span class="card-name">${d.name} <span style="font-size:10px; color:#666">(${d.tech})</span></span>
-                    <span class="card-loc">${d.country}</span>
+                <div class="card-top">
+                    <span class="card-name">${d.name}</span>
+                    <span class="card-val" style="color:${cfg.color}">${d[cfg.strKey]}</span>
+                </div>
+                <div class="card-meta">
+                    <span class="meta-tag" style="border:1px solid ${d.country==='US'?'#00f2ff':'#ff2a2a'}">${d.country}</span>
+                    <span class="meta-tag">${d.tech}</span>
+                </div>
+                <div class="card-desc">${d.desc}</div>
+                
+                <div style="background:#222; height:3px; margin:8px 0; width:100%">
+                    <div style="background:${cfg.color}; height:100%; width:${(val/cfg.max)*100}%"></div>
                 </div>
                 
-                <div class="stat-row">
-                    <div class="stat-label">WAR CHEST</div>
-                    <div class="bar-track"><div class="bar-fill c-money" style="width:${pctMoney}%"></div></div>
-                    <div class="stat-val t-money">${d.moneyDisplay}</div>
-                </div>
-
-                <div class="stat-row">
-                    <div class="stat-label">COMPUTE</div>
-                    <div class="bar-track"><div class="bar-fill c-compute" style="width:${pctCompute}%"></div></div>
-                    <div class="stat-val t-compute">${d.computeDisplay}</div>
-                </div>
-
-                <div class="stat-row">
-                    <div class="stat-label">USERS</div>
-                    <div class="bar-track"><div class="bar-fill c-user" style="width:${pctUsers}%"></div></div>
-                    <div class="stat-val t-user">${d.usersDisplay}</div>
-                </div>
-                
-                <div style="margin-top:5px; text-align:right;">
-                     <a href="${d.source}" target="_blank" class="source-link" onclick="event.stopPropagation()">[SOURCE]</a>
-                </div>
+                <a href="${d.source}" target="_blank" class="source-link">VERIFY SOURCE →</a>
             `;
-            
-            document.getElementById('dossier').appendChild(card);
+            card.onclick = () => {
+                map.flyTo([d.lat, d.lng], 6);
+                circle.openPopup();
+            };
+            dossier.appendChild(card);
         });
     }
 
-    render('all');
+    // --- 5. INTERACTION HANDLERS ---
+    function setMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.m-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector(`.m-btn.${mode}`).classList.add('active');
+        document.querySelector('.header').style.borderColor = modes[mode].color;
+        render();
+    }
 
-    // Draw connection lines
-    L.polyline([[37.77, -122.41], [35.14, -90.04]], { color: '#00f2ff', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
-    L.polyline([[39.90, 116.40], [30.27, 120.15]], { color: '#ff2a2a', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
-    L.polyline([[30.27, 120.15], [22.54, 113.93]], { color: '#ff2a2a', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
+    function setFilter(filter) {
+        currentFilter = filter;
+        document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        render();
+    }
+
+    render();
+
+    // CONNECTORS
+    L.polyline([[37.77, -122.41], [35.14, -90.04]], { color: '#00f2ff', weight: 1, opacity: 0.1, dashArray: '4,4' }).addTo(map);
+    L.polyline([[39.90, 116.40], [22.54, 113.93]], { color: '#ff2a2a', weight: 1, opacity: 0.1, dashArray: '4,4' }).addTo(map);
 
 </script>
 </body>
