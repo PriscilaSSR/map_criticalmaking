@@ -1,109 +1,330 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AI Intelligence Dossier</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI WORLD ORDER | 2026 Dossier</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #080808; font-family: 'Inter', sans-serif; color: #e0e0e0; }
-        #map { height: 100vh; width: 100vw; }
-        
-        /* Modern Glass UI */
-        .leaflet-popup-content-wrapper { 
-            background: rgba(15, 15, 15, 0.95); color: white; border: 1px solid #00f2ff;
-            backdrop-filter: blur(10px); border-radius: 12px; width: 320px;
+        :root {
+            --us-color: #00f2ff;
+            --cn-color: #ff2a2a;
+            --bg-glass: rgba(10, 10, 10, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.1);
         }
 
-        .company-card { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .company-name { font-weight: 800; color: #00f2ff; font-size: 16px; }
-        .tag { font-size: 10px; background: #222; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+        body { margin: 0; background: #050505; font-family: 'Space Grotesk', sans-serif; color: #e0e0e0; overflow: hidden; }
         
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; font-size: 11px; }
-        .stat-val { color: #fff; font-weight: bold; }
+        #map { height: 100vh; width: 100vw; z-index: 1; }
+
+        /* --- UI OVERLAYS --- */
+        .ui-panel {
+            position: absolute;
+            z-index: 1000;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+
+        /* TITLE BAR */
+        .title-bar {
+            top: 20px; left: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border-left: 4px solid #fff;
+        }
+        .title-bar h1 { margin: 0; font-size: 24px; letter-spacing: 2px; text-transform: uppercase; }
+        .title-bar .subtitle { font-size: 10px; color: #888; margin-top: 4px; font-family: monospace; }
+
+        /* SIDEBAR DOSSIER */
+        .dossier-panel {
+            top: 20px; right: 20px; bottom: 20px;
+            width: 380px;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* SECTION HEADERS */
+        .section-header {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #666;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* COMPARE BARS */
+        .compare-row { margin-bottom: 12px; }
+        .compare-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+        .bar-container { background: #222; height: 6px; border-radius: 3px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 3px; position: relative; }
         
-        .source-link { font-size: 9px; color: #666; text-decoration: none; display: block; margin-top: 5px; }
-        .source-link:hover { color: #00f2ff; }
+        .us-fill { background: var(--us-color); box-shadow: 0 0 10px var(--us-color); }
+        .cn-fill { background: var(--cn-color); box-shadow: 0 0 10px var(--cn-color); }
+
+        /* COMPANY CARDS IN SIDEBAR */
+        .leaderboard-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .leaderboard-card:hover { background: rgba(255,255,255,0.08); border-color: #555; }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-name { font-weight: 700; font-size: 14px; }
+        .card-metric { font-family: monospace; font-size: 11px; color: #aaa; }
+        
+        .us-text { color: var(--us-color); }
+        .cn-text { color: var(--cn-color); }
+
+        /* MAP POPUPS */
+        .leaflet-popup-content-wrapper {
+            background: rgba(10, 10, 10, 0.95);
+            color: #fff;
+            border: 1px solid #333;
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .leaflet-popup-tip { background: #111; }
+        .popup-stat { display: grid; grid-template-columns: 80px 1fr; gap: 5px; font-size: 12px; margin: 4px 0; }
+        .popup-label { color: #666; }
+        .popup-val { font-weight: bold; }
+
+        /* CUSTOM MARKERS */
+        .custom-marker {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 15px currentColor;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0px rgba(255, 255, 255, 0.4); }
+            100% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
     </style>
 </head>
 <body>
 
 <div id="map"></div>
 
+<div class="ui-panel title-bar">
+    <h1>AI World Order</h1>
+    <div class="subtitle">LIVE INTELLIGENCE DOSSIER // 2026 ESTIMATES</div>
+</div>
+
+<div class="ui-panel dossier-panel">
+    
+    <div>
+        <div class="section-header">Global Power Balance (Compute)</div>
+        <div class="compare-row">
+            <div class="compare-label"><span>USA (Nvidia H100 Eq.)</span><span>~4.5M Units</span></div>
+            <div class="bar-container"><div class="bar-fill us-fill" style="width: 85%"></div></div>
+        </div>
+        <div class="compare-row">
+            <div class="compare-label"><span>China (Ascend/Stockpile)</span><span>~800k Units</span></div>
+            <div class="bar-container"><div class="bar-fill cn-fill" style="width: 25%"></div></div>
+        </div>
+    </div>
+
+    <div>
+        <div class="section-header">Top Models (Reasoning/Arena)</div>
+        <div class="leaderboard-card" onclick="flyToCity(37.77, -122.41)">
+            <div class="card-header">
+                <span class="card-name us-text">OpenAI (o3/GPT-4o)</span>
+                <span class="card-metric">Arena: 1310</span>
+            </div>
+            <div class="bar-container" style="height:4px; margin-top:6px; background:#333;">
+                <div class="bar-fill us-fill" style="width: 100%"></div>
+            </div>
+        </div>
+        <div class="leaderboard-card" onclick="flyToCity(30.27, 120.15)">
+            <div class="card-header">
+                <span class="card-name cn-text">DeepSeek (R1/V3)</span>
+                <span class="card-metric">Arena: 1298</span>
+            </div>
+            <div class="bar-container" style="height:4px; margin-top:6px; background:#333;">
+                <div class="bar-fill cn-fill" style="width: 98%"></div>
+            </div>
+        </div>
+        <div class="leaderboard-card" onclick="flyToCity(37.77, -122.41)">
+            <div class="card-header">
+                <span class="card-name us-text">Anthropic (Claude 3.5)</span>
+                <span class="card-metric">Arena: 1285</span>
+            </div>
+            <div class="bar-container" style="height:4px; margin-top:6px; background:#333;">
+                <div class="bar-fill us-fill" style="width: 96%"></div>
+            </div>
+        </div>
+        <div class="leaderboard-card" onclick="flyToCity(37.38, -122.08)">
+            <div class="card-header">
+                <span class="card-name us-text">Google (Gemini 1.5)</span>
+                <span class="card-metric">Arena: 1270</span>
+            </div>
+            <div class="bar-container" style="height:4px; margin-top:6px; background:#333;">
+                <div class="bar-fill us-fill" style="width: 94%"></div>
+            </div>
+        </div>
+        <div class="leaderboard-card" onclick="flyToCity(30.27, 120.15)">
+            <div class="card-header">
+                <span class="card-name cn-text">Alibaba (Qwen 2.5)</span>
+                <span class="card-metric">Arena: 1265</span>
+            </div>
+            <div class="bar-container" style="height:4px; margin-top:6px; background:#333;">
+                <div class="bar-fill cn-fill" style="width: 93%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="font-size: 12px; line-height: 1.5; color: #999;">
+        <div class="section-header">Intel Brief</div>
+        <p><strong>🇺🇸 USA Strategy:</strong> "Brute Force" Scaling. Massive clusters (100k+ H100s). Focus on AGI via power (OpenAI/xAI).</p>
+        <p><strong>🇨🇳 China Strategy:</strong> "Efficiency" & App Integration. DeepSeek proved low-cost reasoning is viable. Massive user deployment via SuperApps (Baidu/Tencent).</p>
+    </div>
+
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    var map = L.map('map', { zoomControl: false }).setView([30, 10], 3);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+    // 1. MAP INIT (Dark Mode)
+    var map = L.map('map', { 
+        zoomControl: false,
+        center: [30, 180], // Center on Pacific to show both sides
+        zoom: 3,
+        minZoom: 2
+    });
 
-    // DEEP DATA OBJECT
-    const cityData = [
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    // 2. DATASETS (2025/2026 Estimates)
+    const hubs = [
         {
-            city: "Silicon Valley",
-            coords: [37.38, -122.08],
-            color: "#00f2ff",
+            name: "San Francisco Bay Area",
+            country: "US",
+            coords: [37.77, -122.41],
             companies: [
-                {
-                    name: "OpenAI",
-                    investment: "$13B+",
-                    arena: "1280 (GPT-4o)",
-                    compute: "Microsoft Azure Clusters",
-                    gov: "USAF Data Analysis",
-                    source: "https://openai.com/news"
-                },
-                {
-                    name: "Anthropic",
-                    investment: "$8B+",
-                    arena: "1271 (Claude 3.5)",
-                    compute: "AWS Trainium/Inferentia",
-                    gov: "NIST Safety Tests",
-                    source: "https://www.crunchbase.com"
-                }
+                { name: "OpenAI", val: "$157B", tech: "GPT-4o / o3", compute: "Azure (300k+ GPUs)", users: "1B+ Weekly" },
+                { name: "Anthropic", val: "$40B", tech: "Claude 3.5 Sonnet", compute: "AWS Trainium", users: "Enterprise Heavy" }
             ]
         },
         {
-            city: "Beijing",
-            coords: [39.90, 116.40],
-            color: "#ff3e3e",
+            name: "Silicon Valley (South)",
+            country: "US",
+            coords: [37.38, -122.08],
             companies: [
-                {
-                    name: "Baidu (Ernie)",
-                    investment: "Internal/Public",
-                    arena: "1150+ (Ernie 4.0)",
-                    compute: "Kunlun AI Chips",
-                    gov: "Municipal Smart City",
-                    source: "https://ir.baidu.com"
-                },
-                {
-                    name: "Zhipu AI",
-                    investment: "$2.5B (Alibaba/Tencent)",
-                    arena: "1200+ (GLM-4)",
-                    compute: "State Grid Clusters",
-                    gov: "Tsinghua Research",
-                    source: "https://www.reuters.com"
-                }
+                { name: "Google DeepMind", val: "Internal", tech: "Gemini 1.5 Pro", compute: "TPU v5p Clusters", users: "2B+ (Workspace)" },
+                { name: "Meta FAIR", val: "Internal", tech: "Llama 3.1", compute: "600k H100s", users: "Open Weights King" }
+            ]
+        },
+        {
+            name: "Memphis (xAI Supercluster)",
+            country: "US",
+            coords: [35.14, -90.04],
+            companies: [
+                { name: "xAI", val: "$50B", tech: "Grok 3", compute: "Colossus (100k H100s)", users: "X Integration" }
+            ]
+        },
+        {
+            name: "Hangzhou",
+            country: "CN",
+            coords: [30.27, 120.15],
+            companies: [
+                { name: "DeepSeek", val: "N/A (Quant)", tech: "DeepSeek-R1 (Open)", compute: "H800 Clusters (Efficient)", users: "600M+ Monthly" },
+                { name: "Alibaba Cloud", val: "Public", tech: "Qwen 2.5", compute: "Apsara Cloud", users: "No. 1 in China Cloud" }
+            ]
+        },
+        {
+            name: "Beijing",
+            country: "CN",
+            coords: [39.90, 116.40],
+            companies: [
+                { name: "Baidu", val: "Public", tech: "Ernie 4.0 Turbo", compute: "Kunlun Chips", users: "600M+ (App)" },
+                { name: "Moonshot AI", val: "$3B", tech: "Kimi (Long Ctx)", compute: "Domestic Cloud", users: "Top Cons. App" },
+                { name: "Zhipu AI", val: "$3B", tech: "GLM-4", compute: "Gov Backed", users: "Academic/Gov" }
             ]
         }
     ];
 
-    cityData.forEach(city => {
-        let popupHtml = `<h3 style="margin:0 0 10px 0">${city.city} Dossier</h3>`;
+    // 3. RENDER MARKERS
+    hubs.forEach(hub => {
+        const color = hub.country === 'US' ? '#00f2ff' : '#ff2a2a';
         
-        city.companies.forEach(co => {
-            popupHtml += `
-                <div class="company-card">
-                    <div class="company-name">${co.name}</div>
-                    <div class="stat-grid">
-                        <div>Funding: <span class="stat-val">${co.investment}</span></div>
-                        <div>Arena: <span class="stat-val">${co.arena}</span></div>
-                        <div>Compute: <span class="stat-val">${co.compute}</span></div>
-                        <div>Gov: <span class="stat-val">${co.gov}</span></div>
-                    </div>
-                    <a href="${co.source}" target="_blank" class="source-link">🔗 View Verification Source</a>
-                </div>`;
+        // Custom HTML Icon for glowing effect
+        const icon = L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div class="custom-marker" style="color: ${color}; border-color: ${color};"></div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
         });
 
-        L.circleMarker(city.coords, {
-            radius: 15, fillColor: city.color, color: city.color, weight: 2, fillOpacity: 0.3
-        }).addTo(map).bindPopup(popupHtml);
+        // Popup Construction
+        let popupContent = `<h3 style="margin:0 0 10px 0; color:${color}; border-bottom:1px solid #333; padding-bottom:5px;">${hub.name}</h3>`;
+        
+        hub.companies.forEach(co => {
+            popupContent += `
+                <div style="margin-bottom:12px;">
+                    <div style="font-weight:800; font-size:14px;">${co.name}</div>
+                    <div class="popup-stat"><span class="popup-label">Valuation:</span> <span class="popup-val">${co.val}</span></div>
+                    <div class="popup-stat"><span class="popup-label">Tech:</span> <span class="popup-val" style="color:${color}">${co.tech}</span></div>
+                    <div class="popup-stat"><span class="popup-label">Compute:</span> <span class="popup-val">${co.compute}</span></div>
+                    <div class="popup-stat"><span class="popup-label">Users:</span> <span class="popup-val">${co.users}</span></div>
+                </div>
+            `;
+        });
+
+        const marker = L.marker(hub.coords, { icon: icon }).addTo(map);
+        marker.bindPopup(popupContent);
     });
+
+    // 4. CONNECTIVITY LINES (Visual Flair)
+    // Draw lines from US hubs to center and China hubs to center to imply "Digital Warfare"
+    const usHubs = hubs.filter(h => h.country === 'US');
+    const cnHubs = hubs.filter(h => h.country === 'CN');
+
+    usHubs.forEach(h1 => {
+        usHubs.forEach(h2 => {
+            if(h1 !== h2) {
+                L.polyline([h1.coords, h2.coords], { color: '#00f2ff', weight: 1, opacity: 0.2 }).addTo(map);
+            }
+        })
+    });
+    
+    cnHubs.forEach(h1 => {
+        cnHubs.forEach(h2 => {
+            if(h1 !== h2) {
+                L.polyline([h1.coords, h2.coords], { color: '#ff2a2a', weight: 1, opacity: 0.2 }).addTo(map);
+            }
+        })
+    });
+
+    // Helper for comparison clicks
+    function flyToCity(lat, lng) {
+        map.flyTo([lat, lng], 10, { duration: 2 });
+    }
 
 </script>
 </body>
