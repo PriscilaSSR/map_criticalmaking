@@ -3,366 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLOBAL AI INTELLIGENCE | FINANCIAL LAYER</title>
+    <title>AI WAR CHEST | 2026 INTELLIGENCE</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --us-color: #00f2ff;
-            --cn-color: #ff3e3e;
-            --bg-glass: rgba(5, 5, 5, 0.92);
-            --border: 1px solid rgba(255, 255, 255, 0.15);
-            --neon-glow: 0 0 10px rgba(0, 242, 255, 0.3);
-            --money-green: #00ff9d;
+            --cn-color: #ff2a2a;
+            --money-color: #00ff41;  /* Matrix Green for Cash */
+            --compute-color: #00b8ff; /* Blue for Compute */
+            --user-color: #d600ff;    /* Purple for Users */
+            --bg-dark: #050505;
+            --panel-bg: rgba(10, 10, 10, 0.95);
+            --border: 1px solid #333;
         }
 
-        body { margin: 0; background: #000; font-family: 'JetBrains Mono', monospace; color: #ccc; overflow: hidden; }
+        body { margin: 0; background: var(--bg-dark); font-family: 'JetBrains Mono', monospace; color: #e0e0e0; overflow: hidden; }
         
-        #map { height: 100vh; width: 100vw; z-index: 1; filter: grayscale(100%) contrast(1.2) brightness(0.8); }
+        #map { height: 100vh; width: 100vw; z-index: 1; filter: grayscale(100%) contrast(1.1) brightness(0.7); }
 
-        /* SCANLINE EFFECT */
-        body::after {
-            content: " ";
-            display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        /* GRID OVERLAY */
+        body::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none; z-index: 2;
         }
 
-        /* UI PANELS */
-        .ui-panel {
-            position: absolute; z-index: 1000; background: var(--bg-glass);
-            border: var(--border); backdrop-filter: blur(8px); padding: 15px;
+        /* --- UI PANELS --- */
+        .panel {
+            position: absolute; z-index: 1000; background: var(--panel-bg);
+            border: var(--border); backdrop-filter: blur(5px);
         }
 
-        /* HEADER */
-        .top-bar {
-            top: 20px; left: 20px; right: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #333;
+        /* TOP HEADER */
+        .header {
+            top: 20px; left: 20px; right: 20px; height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; border-bottom: 2px solid var(--money-color);
         }
-        .h-title { font-weight: 700; color: #fff; letter-spacing: 2px; font-size: 18px; }
-        .h-sub { font-size: 10px; color: var(--money-green); margin-top: 4px; }
+        .title-group h1 { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 2px; color: #fff; text-transform: uppercase; }
+        .title-group span { font-size: 10px; color: var(--money-color); letter-spacing: 1px; }
 
-        /* FILTER BUTTONS */
-        .controls { top: 110px; left: 20px; display: flex; flex-direction: column; gap: 8px; width: 160px; }
-        .btn-filter {
-            background: rgba(255,255,255,0.05); border: 1px solid #444; color: #888;
-            padding: 8px 12px; cursor: pointer; font-family: inherit; font-size: 10px;
-            text-align: left; transition: 0.3s; text-transform: uppercase;
-        }
-        .btn-filter:hover, .btn-filter.active { background: #fff; color: #000; border-color: #fff; }
-        .btn-filter.us.active { background: var(--us-color); border-color: var(--us-color); }
-        .btn-filter.cn.active { background: var(--cn-color); border-color: var(--cn-color); }
-
-        /* RIGHT SIDEBAR (STATS) */
-        .sidebar {
-            top: 110px; right: 20px; bottom: 40px; width: 360px;
-            overflow-y: auto; border-left: 2px solid #333;
+        /* SIDEBAR (THE DOSSIER) */
+        .dossier {
+            top: 100px; right: 20px; bottom: 30px; width: 400px;
+            overflow-y: auto; padding: 0; display: flex; flex-direction: column;
         }
 
-        .stat-box { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #333; }
-        .stat-label { font-size: 9px; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        /* CARD STYLES */
+        .card {
+            padding: 15px; border-bottom: 1px solid #222;
+            transition: background 0.2s; cursor: crosshair;
+        }
+        .card:hover { background: rgba(255,255,255,0.05); }
         
-        /* FINANCIAL BARS */
-        .money-bar-container { display: flex; align-items: center; margin-bottom: 6px; font-size: 10px; }
-        .money-label { width: 80px; color: #fff; }
-        .money-track { flex-grow: 1; background: #222; height: 6px; margin: 0 10px; position: relative; }
-        .money-fill { height: 100%; background: var(--money-green); }
-        .money-val { width: 60px; text-align: right; color: var(--money-green); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .card-name { font-size: 14px; font-weight: 700; color: #fff; }
+        .card-loc { font-size: 9px; color: #666; text-transform: uppercase; }
+        
+        .stat-row { display: flex; align-items: center; margin-bottom: 6px; font-size: 10px; }
+        .stat-label { width: 70px; color: #888; text-align: right; padding-right: 10px; }
+        .bar-track { flex-grow: 1; background: #222; height: 4px; position: relative; }
+        .bar-fill { height: 100%; position: absolute; left: 0; top: 0; }
+        .stat-val { width: 70px; padding-left: 10px; font-weight: bold; }
 
-        .co-list-item {
-            padding: 12px; border-bottom: 1px solid #222; cursor: pointer;
-            transition: all 0.2s;
+        /* COLOR CODING CLASSES */
+        .c-money { background: var(--money-color); box-shadow: 0 0 8px var(--money-color); }
+        .t-money { color: var(--money-color); }
+        
+        .c-compute { background: var(--compute-color); }
+        .t-compute { color: var(--compute-color); }
+        
+        .c-user { background: var(--user-color); }
+        .t-user { color: var(--user-color); }
+
+        .flag-us { border-left: 3px solid var(--us-color); }
+        .flag-cn { border-left: 3px solid var(--cn-color); }
+
+        /* FILTERS */
+        .controls {
+            top: 100px; left: 20px; width: 140px;
+            display: flex; flex-direction: column; gap: 5px; padding: 10px;
         }
-        .co-list-item:hover { background: rgba(255,255,255,0.05); padding-left: 15px; }
-        .co-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .co-name { color: #fff; font-weight: bold; font-size: 13px; }
-        .co-money { color: var(--money-green); font-size: 11px; }
-        .co-detail { font-size: 10px; color: #888; display: flex; gap: 10px; }
-        .source-link { color: #555; text-decoration: none; border-bottom: 1px dotted #555; }
-        .source-link:hover { color: #fff; border-color: #fff; }
+        .btn {
+            background: transparent; border: 1px solid #444; color: #888;
+            padding: 8px; font-family: inherit; font-size: 10px; cursor: pointer;
+            text-align: left; transition: all 0.2s; text-transform: uppercase;
+        }
+        .btn:hover, .btn.active { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); }
 
-        /* MAP ELEMENTS */
-        .custom-marker {
-            width: 10px; height: 10px; border-radius: 50%;
+        /* MARKERS */
+        .marker-dot {
+            width: 12px; height: 12px; border-radius: 50%;
             background: #000; border: 2px solid #fff;
-            box-shadow: 0 0 15px currentColor;
-            transition: all 0.3s;
+            box-shadow: 0 0 10px #fff;
+            animation: pulse 2s infinite;
         }
-        .leaflet-popup-content-wrapper {
-            background: rgba(10,10,10,0.95); border: 1px solid var(--money-green); color: #fff;
-            font-family: 'JetBrains Mono', monospace; font-size: 11px;
-            border-radius: 4px; width: 280px;
-        }
-        .leaflet-popup-tip { background: #111; border-top: 1px solid var(--money-green); }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; }
+        /* POPUP */
+        .leaflet-popup-content-wrapper {
+            background: rgba(5,5,5,0.95); border: 1px solid #fff;
+            color: #fff; border-radius: 2px; font-family: 'JetBrains Mono';
+        }
+        .source-link { font-size: 9px; color: #555; text-decoration: none; display: block; margin-top: 5px; }
+        .source-link:hover { color: var(--money-color); }
     </style>
 </head>
 <body>
 
 <div id="map"></div>
 
-<div class="ui-panel top-bar">
-    <div>
-        <div class="h-title">GLOBAL AI WAR ROOM</div>
-        <div class="h-sub">CAPITAL EXPENDITURE & VALUATION TRACKER // 2026 DATA</div>
+<div class="panel header">
+    <div class="title-group">
+        <h1>Global AI War Chests</h1>
+        <span>LIQUID CAPITAL & FIREPOWER // 2026 LIVE DATA</span>
     </div>
-    <div style="text-align:right">
-        <div style="font-size: 24px; color: var(--money-green); font-weight:bold;">$3.2T</div>
-        <div style="font-size: 9px; color: #666;">EST. GLOBAL AI CAPEX (2025-2028)</div>
+    <div style="text-align: right; font-size: 10px;">
+        <div style="color: var(--money-color);">■ CASH TO BURN (USD)</div>
+        <div style="color: var(--compute-color);">■ COMPUTE (H100 EQ)</div>
+        <div style="color: var(--user-color);">■ USER BASE (MAU)</div>
     </div>
 </div>
 
-<div class="ui-panel controls">
-    <div class="stat-label">TACTICAL FILTERS</div>
-    <button class="btn-filter active" onclick="filterMap('all')">ALL UNITS</button>
-    <button class="btn-filter us" onclick="filterMap('US')">USA (CAPEX KINGS)</button>
-    <button class="btn-filter cn" onclick="filterMap('CN')">CHINA (EFFICIENT)</button>
+<div class="panel controls">
+    <div style="font-size:9px; color:#666; margin-bottom:5px;">SECTOR CONTROL</div>
+    <button class="btn active" onclick="render('all')">View All</button>
+    <button class="btn" onclick="render('US')">USA (Big Spend)</button>
+    <button class="btn" onclick="render('CN')">China (Efficiency)</button>
 </div>
 
-<div class="ui-panel sidebar" id="statsPanel">
+<div class="panel dossier" id="dossier">
     </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // --- 1. INTELLIGENCE DATABASE (2026 FINANCIALS) ---
-    const db = [
-        // === USA (THE TRILLION DOLLAR CLUB) ===
-        { 
-            name: "OpenAI", 
-            country: "US", 
-            lat: 37.76, lng: -122.42, 
-            financial: "$500B Valuation", 
-            detail: "Raised $6.6B (Oct '25)",
-            source: "https://www.nytimes.com/2025/10/02/technology/openai-funding.html", // Placeholder for actual link logic
-            tech: "o3 / GPT-5",
-            desc: "Microsoft committed $13B+. The highest valued private company in history."
+    // 1. DATA INTELLIGENCE
+    // "money" = Cash on Hand / Recent Raise / Allocated Capex (The actual spending power)
+    // "compute" = Estimated H100 equivalent clusters
+    // "users" = MAU (Monthly Active Users) or WAU
+    const data = [
+        // --- USA ---
+        {
+            name: "OpenAI", country: "US", lat: 37.76, lng: -122.42,
+            money: 22000000000, moneyDisplay: "$22B (Cash)",
+            compute: 350000, computeDisplay: "350k H100s",
+            users: 800000000, usersDisplay: "800M WAU",
+            tech: "GPT-4o / o3",
+            source: "https://tracxn.com/d/companies/openai",
+            desc: "Raised $6.6B Oct '25 + Softbank $1.5B. Liquid cash heavy."
         },
-        { 
-            name: "xAI", 
-            country: "US", 
-            lat: 35.14, lng: -90.04, 
-            financial: "$230B Valuation", 
-            detail: "Raised $20B (Jan '26)",
-            source: "https://fintool.com/news/xai-20-billion-series-e-nvidia-cisco", 
+        {
+            name: "xAI (Memphis)", country: "US", lat: 35.14, lng: -90.04,
+            money: 20000000000, moneyDisplay: "$20B (Raised)",
+            compute: 100000, computeDisplay: "100k Colossus",
+            users: 50000000, usersDisplay: "X Integration",
             tech: "Grok 3",
-            desc: "Largest single round ever. Building 'Colossus' cluster in Memphis."
+            source: "https://news.crunchbase.com/venture/biggest-funding-rounds-xai-2026/",
+            desc: "Jan '26 Round: $20B cash injection directly for compute."
         },
-        { 
-            name: "Anthropic", 
-            country: "US", 
-            lat: 37.78, lng: -122.40, 
-            financial: "$350B Valuation", 
-            detail: "Est. Nov '25 Round",
-            source: "https://techfundingnews.com/openai-anthropic-xai-ai-funding-trends-2025/", 
-            tech: "Claude 3.5",
-            desc: "Heavily backed by Amazon ($4B) and Google ($2B)."
+        {
+            name: "Google DeepMind", country: "US", lat: 37.40, lng: -122.08,
+            money: 185000000000, moneyDisplay: "$185B (Capex)",
+            compute: 500000, computeDisplay: "TPU v5p Pods",
+            users: 2000000000, usersDisplay: "2B+ (Workspace)",
+            tech: "Gemini 1.5 Pro",
+            source: "https://www.cnbc.com/2026/02/07/google-microsoft-meta-capex.html",
+            desc: "Spending $185B in 2026 Capex alone. Infinite internal cash."
         },
-        { 
-            name: "Google (Alphabet)", 
-            country: "US", 
-            lat: 37.40, lng: -122.08, 
-            financial: "$132B Capex", 
-            detail: "2026 Projection",
-            source: "https://www.engineeringnews.co.za/article/the-new-arms-race-the-race-for-computing-power-2026-02-09", 
-            tech: "Gemini / TPUs",
-            desc: "Spending primarily on custom TPU infrastructure and energy."
-        },
-        { 
-            name: "Microsoft", 
-            country: "US", 
-            lat: 47.67, lng: -122.12, 
-            financial: "$116B Capex", 
-            detail: "2026 Projection",
-            source: "https://m.economictimes.com/news/international/us/tech-giants-to-spend-320-billion-on-ai-in-2025", 
-            tech: "Azure AI",
-            desc: "Massive data center buildout to support OpenAI & Copilot."
-        },
-        { 
-            name: "Meta", 
-            country: "US", 
-            lat: 37.45, lng: -122.15, 
-            financial: "$123B Capex", 
-            detail: "2026 Projection",
-            source: "https://www.engineeringnews.co.za/article/the-new-arms-race-the-race-for-computing-power-2026-02-09", 
+        {
+            name: "Meta FAIR", country: "US", lat: 37.45, lng: -122.15,
+            money: 123000000000, moneyDisplay: "$123B (Capex)",
+            compute: 600000, computeDisplay: "600k H100s",
+            users: 3000000000, usersDisplay: "3B+ (Family)",
             tech: "Llama 4",
-            desc: "Stockpiling 600k+ H100s. Open weights strategy."
+            source: "https://www.macrotrends.net/stocks/charts/META/meta-platforms/cash-on-hand",
+            desc: "Stockpiled 600k H100s. $81B Cash on Hand + $123B Capex budget."
         },
-        { 
-            name: "Apple", 
-            country: "US", 
-            lat: 37.33, lng: -122.03, 
-            financial: "$500B Investment", 
-            detail: "US Spend (4 Yrs)",
-            source: "https://www.apple.com/newsroom/2025/02/apple-will-spend-more-than-500-billion-usd-in-the-us-over-the-next-four-years/", 
-            tech: "Apple Intel.",
-            desc: "Focus on Private Cloud Compute and on-device silicon."
+        {
+            name: "Anthropic", country: "US", lat: 37.78, lng: -122.40,
+            money: 13000000000, moneyDisplay: "$13B (Cash)",
+            compute: 150000, computeDisplay: "AWS Trainium",
+            users: 19000000, usersDisplay: "19M MAU",
+            tech: "Claude 3.5 Sonnet",
+            source: "https://backlinko.com/claude-users",
+            desc: "Raised $10B Jan '26. High cash burn, high performance."
         },
 
-        // === CHINA (THE EFFICIENCY DRIVERS) ===
-        { 
-            name: "DeepSeek", 
-            country: "CN", 
-            lat: 30.27, lng: 120.15, 
-            financial: "~$10B Val (Est)", 
-            detail: "Quant / HFT Backed",
-            source: "https://www.sixthtone.com/news/1018017", 
+        // --- CHINA ---
+        {
+            name: "DeepSeek", country: "CN", lat: 30.27, lng: 120.15,
+            money: 6000000, moneyDisplay: "$6M (Training Cost)",
+            compute: 2048, computeDisplay: "2k H800s",
+            users: 96000000, usersDisplay: "96M MAU",
             tech: "DeepSeek-R1",
-            desc: "The 'Sputnik Moment'. Extremely low cost training ($6M for V3)."
+            source: "https://www.piie.com/blogs/realtime-economics/2026/deepseek-shock",
+            desc: "The Anomaly. Trained on $6M compute. Disruptive efficiency."
         },
-        { 
-            name: "MiniMax", 
-            country: "CN", 
-            lat: 31.23, lng: 121.47, 
-            financial: "$15.2B Mkt Cap", 
-            detail: "IPO (HK) Jan '26",
-            source: "https://www.techbuzz.ai/articles/moonshot-ai-valued-at-4-8b-in-fresh-round", 
-            tech: "abab 6.5",
-            desc: "Successfully IPO'd in Hong Kong. Character AI focus."
-        },
-        { 
-            name: "Zhipu AI", 
-            country: "CN", 
-            lat: 40.00, lng: 116.33, 
-            financial: "$13B Mkt Cap", 
-            detail: "IPO (HK) Jan '26",
-            source: "https://www.trendingtopics.eu/minimax-zhipu-ai-ipos/", 
-            tech: "GLM-4",
-            desc: "Gov-backed academic powerhouse (Tsinghua). IPO'd recently."
-        },
-        { 
-            name: "Moonshot AI", 
-            country: "CN", 
-            lat: 39.92, lng: 116.45, 
-            financial: "$4.8B Valuation", 
-            detail: "Jan '26 Round",
-            source: "https://www.cnbc.com/2026/01/19/moonshot-ai-valuation.html", 
-            tech: "Kimi Chat",
-            desc: "Backed by Alibaba ($1B+) and Tencent. Long-context specialist."
-        },
-        { 
-            name: "Alibaba Cloud", 
-            country: "CN", 
-            lat: 30.25, lng: 120.20, 
-            financial: "$200B+ (Grp)", 
-            detail: "Major R&D Spend",
-            source: "https://www.chelidze.group/en/post/ai-china-2025", 
+        {
+            name: "Alibaba Cloud", country: "CN", lat: 30.25, lng: 120.20,
+            money: 85000000000, moneyDisplay: "$85B (Cash)",
+            compute: 100000, computeDisplay: "Apsara Cloud",
+            users: 600000000, usersDisplay: "Enterprise King",
             tech: "Qwen 2.5",
-            desc: "Leading open-weights model in China. Massive cloud infra."
+            source: "https://www.macrotrends.net/stocks/charts/BABA/alibaba/cash-on-hand",
+            desc: "Massive R&D budget. Qwen is the Llama of China."
+        },
+        {
+            name: "Tencent", country: "CN", lat: 22.54, lng: 113.93,
+            money: 55000000000, moneyDisplay: "$55B (Cash)",
+            compute: 80000, computeDisplay: "Hunyuan Cluster",
+            users: 1300000000, usersDisplay: "1.3B (WeChat)",
+            tech: "Hunyuan",
+            source: "https://www.statista.com/statistics/272014/global-social-networks-ranked-by-number-of-users/",
+            desc: "Integrating AI into WeChat. Massive distribution advantage."
+        },
+        {
+            name: "Moonshot AI", country: "CN", lat: 39.92, lng: 116.45,
+            money: 1770000000, moneyDisplay: "$1.77B (Funding)",
+            compute: 10000, computeDisplay: "Cloud Rental",
+            users: 20000000, usersDisplay: "Top Consumer App",
+            tech: "Kimi Chat",
+            source: "https://tracxn.com/d/companies/moonshot-ai",
+            desc: "Jan '26 Series C. Kimi is the #1 consumer chatbot in China."
         }
     ];
 
-    // --- 2. MAP INIT ---
-    var map = L.map('map', { 
-        zoomControl: false, center: [35, 175], zoom: 3, minZoom: 2, maxZoom: 10
-    });
+    // 2. MAP SETUP
+    const map = L.map('map', { zoomControl: false, center: [35, 175], zoom: 3, minZoom: 2 });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap, © CARTO' }).addTo(map);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap, &copy; CARTO',
-        subdomains: 'abcd'
-    }).addTo(map);
+    // 3. SCALING LOGIC
+    // We need to normalize bars so they fit the UI.
+    const maxMoney = Math.max(...data.map(d => d.money));
+    const maxCompute = Math.max(...data.map(d => d.compute));
+    const maxUsers = Math.max(...data.map(d => d.users));
 
-    var markersLayer = L.layerGroup().addTo(map);
+    function render(filter) {
+        // Clear existing
+        document.getElementById('dossier').innerHTML = '';
+        map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
 
-    // --- 3. RENDER LOGIC ---
-    function renderMarkers(filter) {
-        markersLayer.clearLayers();
-        let visibleCompanies = [];
+        data.forEach(d => {
+            if (filter !== 'all' && d.country !== filter) return;
 
-        db.forEach(co => {
-            if (filter !== 'all' && co.country !== filter) return;
-            visibleCompanies.push(co);
+            const color = d.country === 'US' ? '#00f2ff' : '#ff2a2a';
+            const flagClass = d.country === 'US' ? 'flag-us' : 'flag-cn';
 
-            const color = co.country === 'US' ? '#00f2ff' : '#ff3e3e';
-            
-            // Marker
+            // MARKER
             const icon = L.divIcon({
-                className: 'custom-icon',
-                html: `<div class="custom-marker" style="color:${color}; border-color:${color}; box-shadow: 0 0 10px ${color}"></div>`,
-                iconSize: [12, 12],
-                iconAnchor: [6, 6]
+                className: 'custom',
+                html: `<div class="marker-dot" style="border-color:${color}; box-shadow:0 0 10px ${color}"></div>`,
+                iconSize: [12, 12]
             });
 
-            const popup = `
-                <div style="font-weight:800; font-size:14px; margin-bottom:4px; color:#fff;">${co.name}</div>
-                <div style="color:${color}; font-size:10px; margin-bottom:8px;">${co.country === 'US' ? 'UNITED STATES' : 'PEOPLES REPUBLIC OF CHINA'}</div>
+            L.marker([d.lat, d.lng], { icon: icon }).addTo(map).bindPopup(`
+                <div style="min-width:200px">
+                    <strong style="color:${color}; font-size:14px">${d.name}</strong><br>
+                    <div style="font-size:10px; color:#aaa; margin-top:5px">${d.desc}</div>
+                    <hr style="border:0; border-top:1px solid #333; margin:8px 0">
+                    <div style="font-size:11px">
+                        <span style="color:var(--money-color)">$</span> ${d.moneyDisplay}<br>
+                        <span style="color:var(--compute-color)">GPU</span> ${d.computeDisplay}<br>
+                        <span style="color:var(--user-color)">USR</span> ${d.usersDisplay}
+                    </div>
+                    <a href="${d.source}" target="_blank" class="source-link">🔗 VERIFY DATA</a>
+                </div>
+            `);
+
+            // SIDEBAR CARD
+            const card = document.createElement('div');
+            card.className = `card ${flagClass}`;
+            card.onclick = () => map.flyTo([d.lat, d.lng], 10);
+            
+            // Calc Percentages
+            const pctMoney = (d.money / maxMoney) * 100;
+            const pctCompute = (d.compute / maxCompute) * 100;
+            const pctUsers = (d.users / maxUsers) * 100;
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="card-name">${d.name} <span style="font-size:10px; color:#666">(${d.tech})</span></span>
+                    <span class="card-loc">${d.country}</span>
+                </div>
                 
-                <div style="border-top:1px solid #333; padding-top:8px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                        <span style="color:#888;">FINANCIAL:</span>
-                        <span style="color:var(--money-green); font-weight:bold;">${co.financial}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                        <span style="color:#888;">CONTEXT:</span>
-                        <span style="color:#ccc;">${co.detail}</span>
-                    </div>
-                     <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                        <span style="color:#888;">TECH:</span>
-                        <span style="color:#fff;">${co.tech}</span>
-                    </div>
-                    <div style="font-size:10px; color:#999; line-height:1.3; margin-bottom:8px;">${co.desc}</div>
-                    <a href="${co.source}" target="_blank" style="color:#00f2ff; font-size:9px; text-decoration:none;">🔗 VERIFY SOURCE DATA</a>
+                <div class="stat-row">
+                    <div class="stat-label">WAR CHEST</div>
+                    <div class="bar-track"><div class="bar-fill c-money" style="width:${pctMoney}%"></div></div>
+                    <div class="stat-val t-money">${d.moneyDisplay}</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-label">COMPUTE</div>
+                    <div class="bar-track"><div class="bar-fill c-compute" style="width:${pctCompute}%"></div></div>
+                    <div class="stat-val t-compute">${d.computeDisplay}</div>
+                </div>
+
+                <div class="stat-row">
+                    <div class="stat-label">USERS</div>
+                    <div class="bar-track"><div class="bar-fill c-user" style="width:${pctUsers}%"></div></div>
+                    <div class="stat-val t-user">${d.usersDisplay}</div>
+                </div>
+                
+                <div style="margin-top:5px; text-align:right;">
+                     <a href="${d.source}" target="_blank" class="source-link" onclick="event.stopPropagation()">[SOURCE]</a>
                 </div>
             `;
-
-            L.marker([co.lat, co.lng], { icon: icon }).addTo(markersLayer).bindPopup(popup);
+            
+            document.getElementById('dossier').appendChild(card);
         });
-
-        updateSidebar(visibleCompanies);
     }
 
-    function updateSidebar(companies) {
-        const panel = document.getElementById('statsPanel');
-        
-        // Sort by financial impact (rough heuristic for display)
-        // We can't strictly sort strings like "$500B", so we'll just list them.
-        // Ideally you'd parse the numbers, but for this demo list order is fine.
-        
-        let html = `<div class="stat-box">
-            <div class="stat-label">FINANCIAL INTELLIGENCE LOG</div>
-            <div style="font-size:10px; color:#666;">Sorted by Entity Relevance</div>
-        </div>`;
+    render('all');
 
-        companies.forEach(co => {
-            const color = co.country === 'US' ? 'var(--us-color)' : 'var(--cn-color)';
-            html += `
-                <div class="co-list-item" onclick="map.flyTo([${co.lat}, ${co.lng}], 10)">
-                    <div class="co-header">
-                        <span class="co-name">${co.name}</span>
-                        <span class="co-money">${co.financial}</span>
-                    </div>
-                    <div class="co-detail">
-                        <span style="color:${color}">● ${co.country}</span>
-                        <span>${co.detail}</span>
-                        <a href="${co.source}" target="_blank" class="source-link" onclick="event.stopPropagation()">SRC</a>
-                    </div>
-                    <div style="margin-top:4px; font-size:10px; color:#555;">${co.tech}</div>
-                </div>
-            `;
-        });
-
-        panel.innerHTML = html;
-    }
-
-    // --- 4. INITIALIZE ---
-    renderMarkers('all');
-    
-    function filterMap(type) {
-        document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
-        if(type === 'all') document.querySelector('.btn-filter:nth-child(2)').classList.add('active'); // child index adjusted
-        if(type === 'US') document.querySelector('.btn-filter.us').classList.add('active');
-        if(type === 'CN') document.querySelector('.btn-filter.cn').classList.add('active');
-        renderMarkers(type);
-    }
-
-    // --- 5. VISUAL CONNECTORS (THE MONEY PIPELINES) ---
-    // Connect US West Coast to East Coast (Memphis/Virginia centers usually)
+    // Draw connection lines
     L.polyline([[37.77, -122.41], [35.14, -90.04]], { color: '#00f2ff', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
-    // Connect Beijing to Shanghai/Hangzhou
-    L.polyline([[39.90, 116.40], [30.27, 120.15]], { color: '#ff3e3e', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
+    L.polyline([[39.90, 116.40], [30.27, 120.15]], { color: '#ff2a2a', weight: 1, opacity: 0.1, dashArray: '5,5' }).addTo(map);
 
 </script>
 </body>
