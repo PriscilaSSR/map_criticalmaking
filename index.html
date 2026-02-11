@@ -141,26 +141,26 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // 1. DATA INTELLIGENCE
+   // --- UPDATED INTELLIGENCE DATABASE (V3.1) ---
     const data = [
-        // --- USA ---
+        // === USA: THE BIG SPENDERS ===
         {
-            name: "OpenAI", country: "US", lat: 37.76, lng: -122.42,
-            money: 22000000000, moneyDisplay: "$22B (Cash)",
-            compute: 350000, computeDisplay: "350k H100s",
-            users: 800000000, usersDisplay: "800M WAU",
-            tech: "GPT-4o / o3",
-            source: "https://tracxn.com/d/companies/openai",
-            desc: "Raised $6.6B Oct '25 + Softbank $1.5B. Liquid cash heavy."
+            name: "Microsoft AI", country: "US", lat: 47.67, lng: -122.12,
+            money: 80000000000, moneyDisplay: "$80B (Capex)",
+            compute: 400000, computeDisplay: "Azure Stargate",
+            users: 1500000000, usersDisplay: "Copilot / 365",
+            tech: "Phi-4 / Internal",
+            source: "https://www.microsoft.com/en-us/investor",
+            desc: "Mustafa Suleyman's division. Building 'internal' AGI separate from OpenAI."
         },
         {
-            name: "xAI (Memphis)", country: "US", lat: 35.14, lng: -90.04,
-            money: 20000000000, moneyDisplay: "$20B (Raised)",
-            compute: 100000, computeDisplay: "100k Colossus",
-            users: 50000000, usersDisplay: "X Integration",
-            tech: "Grok 3",
-            source: "https://news.crunchbase.com/venture/biggest-funding-rounds-xai-2026/",
-            desc: "Jan '26 Round: $20B cash injection directly for compute."
+            name: "Amazon AGI", country: "US", lat: 47.60, lng: -122.33,
+            money: 75000000000, moneyDisplay: "$75B (Capex)",
+            compute: 300000, computeDisplay: "Olympus Cluster",
+            users: 400000000, usersDisplay: "AWS Bedrock",
+            tech: "Olympus / Nova",
+            source: "https://www.aboutamazon.com/news/aws",
+            desc: "The 'Olympus' model team. Massive investment in Sovereign Cloud."
         },
         {
             name: "Google DeepMind", country: "US", lat: 37.40, lng: -122.08,
@@ -168,57 +168,127 @@
             compute: 500000, computeDisplay: "TPU v5p Pods",
             users: 2000000000, usersDisplay: "2B+ (Workspace)",
             tech: "Gemini 1.5 Pro",
-            source: "https://www.cnbc.com/2026/02/07/google-microsoft-meta-capex.html",
-            desc: "Spending $185B in 2026 Capex alone. Infinite internal cash."
+            source: "https://abc.xyz/investor/",
+            desc: "The limitless budget. Merged Brain & DeepMind to accelerate Gemini."
         },
         {
             name: "Meta FAIR", country: "US", lat: 37.45, lng: -122.15,
-            money: 123000000000, moneyDisplay: "$123B (Capex)",
+            money: 125000000000, moneyDisplay: "$125B (Capex)",
             compute: 600000, computeDisplay: "600k H100s",
             users: 3000000000, usersDisplay: "3B+ (Family)",
             tech: "Llama 4",
-            source: "https://www.macrotrends.net/stocks/charts/META/meta-platforms/cash-on-hand",
-            desc: "Stockpiled 600k H100s. $81B Cash on Hand + $123B Capex budget."
+            source: "https://investor.fb.com/",
+            desc: "Open weights champion. Owning the 'standard' for research."
+        },
+        {
+            name: "OpenAI", country: "US", lat: 37.76, lng: -122.42,
+            money: 22000000000, moneyDisplay: "$22B (Liquid)",
+            compute: 350000, computeDisplay: "Azure West US",
+            users: 800000000, usersDisplay: "800M WAU",
+            tech: "GPT-5 / o3",
+            source: "https://openai.com/news",
+            desc: "The highest valued private company. Burning cash for scale."
+        },
+        {
+            name: "xAI", country: "US", lat: 35.14, lng: -90.04,
+            money: 20000000000, moneyDisplay: "$20B (Cash)",
+            compute: 100000, computeDisplay: "Colossus (Memphis)",
+            users: 500000000, usersDisplay: "X Platform",
+            tech: "Grok 3",
+            source: "https://x.ai/blog",
+            desc: "Built the world's largest single cluster in 122 days."
+        },
+        {
+            name: "Anthropic", country: "US", lat: 37.78, lng: -122.39, // Offset from OpenAI
+            money: 13000000000, moneyDisplay: "$13B (Cash)",
+            compute: 150000, computeDisplay: "AWS Trainium",
+            users: 20000000, usersDisplay: "Enterprise",
+            tech: "Claude 3.5",
+            source: "https://www.anthropic.com",
+            desc: "Safety-first. Heavily funded by Amazon ($4B) and Google ($2B)."
+        },
+        {
+            name: "NVIDIA Research", country: "US", lat: 37.37, lng: -121.96,
+            money: 30000000000, moneyDisplay: "$30B (R&D)",
+            compute: 50000, computeDisplay: "Eos Supercomputer",
+            users: 5000000, usersDisplay: "Dev Community",
+            tech: "Nemotron 3",
+            source: "https://nvidianews.nvidia.com/",
+            desc: "Not just chips. Quietly releasing SOTA open models (Nemotron)."
         },
 
-        // --- SHENZHEN (NEW ADDS) ---
+        // === CHINA: THE NEW CONSUMER KINGS ===
         {
-            name: "Huawei (Shenzhen)", country: "CN", lat: 22.65, lng: 114.06,
-            money: 25000000000, moneyDisplay: "$25B (R&D)",
-            compute: 200000, computeDisplay: "Ascend 910C",
-            users: 800000000, usersDisplay: "Enterprise/Gov",
-            tech: "Pangu 5.0",
-            source: "https://www.huawei.com/en/ipr",
-            desc: "THE HARDWARE FORTRESS. Investing $25B/yr in R&D. Producing 1.6M Ascend chips/yr."
+            name: "ByteDance", country: "CN", lat: 39.98, lng: 116.32,
+            money: 22800000000, moneyDisplay: "$22.8B (AI Budget)",
+            compute: 100000, computeDisplay: "Huawei/Nvidia Mix",
+            users: 1500000000, usersDisplay: "Douyin/TikTok",
+            tech: "Doubao",
+            source: "https://www.bytedance.com",
+            desc: "The Consumer King. 'Doubao' is the #1 AI app in China."
         },
         {
-            name: "Tencent (Shenzhen)", country: "CN", lat: 22.54, lng: 113.93,
+            name: "Baidu", country: "CN", lat: 40.05, lng: 116.28,
+            money: 18000000000, moneyDisplay: "$18B (R&D)",
+            compute: 80000, computeDisplay: "Kunlun Chips",
+            users: 200000000, usersDisplay: "200M MAU",
+            tech: "Ernie 4.0",
+            source: "https://ir.baidu.com",
+            desc: "The Google of China. Ernie Bot has massive penetration."
+        },
+        {
+            name: "Tencent", country: "CN", lat: 22.54, lng: 113.93,
             money: 66000000000, moneyDisplay: "$66B (Cash)",
             compute: 80000, computeDisplay: "Hunyuan Cluster",
-            users: 1300000000, usersDisplay: "1.3B (WeChat)",
+            users: 1300000000, usersDisplay: "WeChat Integ.",
             tech: "Hunyuan Video",
-            source: "https://www.static.www.tencent.com/uploads/2025/05/14/ee0333e84ef3636e45bd394cd0815f08.pdf",
-            desc: "The Sleeping Giant. $66B Cash on hand. Hunyuan Video is SOTA."
+            source: "https://tencent.com",
+            desc: "Sleeping giant. Using AI to power WeChat and Gaming."
         },
-        
-        // --- CHINA (REST) ---
         {
-            name: "DeepSeek (Hangzhou)", country: "CN", lat: 30.27, lng: 120.15,
+            name: "Huawei", country: "CN", lat: 22.65, lng: 114.06,
+            money: 25000000000, moneyDisplay: "$25B (R&D)",
+            compute: 200000, computeDisplay: "Ascend 910C",
+            users: 800000000, usersDisplay: "Gov/Enterprise",
+            tech: "Pangu 5.0",
+            source: "https://huawei.com",
+            desc: "The Hardware Fortress. Building China's sovereign compute stack."
+        },
+        {
+            name: "DeepSeek", country: "CN", lat: 30.27, lng: 120.15,
             money: 6000000, moneyDisplay: "$6M (Train Cost)",
             compute: 2048, computeDisplay: "2k H800s",
             users: 96000000, usersDisplay: "96M MAU",
             tech: "DeepSeek-R1",
-            source: "https://www.piie.com/blogs/realtime-economics/2026/deepseek-shock",
-            desc: "The Anomaly. Trained on $6M compute. Disruptive efficiency."
+            source: "https://deepseek.com",
+            desc: "The disruptor. Shockingly efficient. The 'Linux' of LLMs?"
         },
         {
             name: "Alibaba Cloud", country: "CN", lat: 30.25, lng: 120.20,
             money: 85000000000, moneyDisplay: "$85B (Cash)",
             compute: 100000, computeDisplay: "Apsara Cloud",
-            users: 600000000, usersDisplay: "Enterprise King",
+            users: 600000000, usersDisplay: "Enterprise",
             tech: "Qwen 2.5",
-            source: "https://www.macrotrends.net/stocks/charts/BABA/alibaba/cash-on-hand",
-            desc: "Massive R&D budget. Qwen is the Llama of China."
+            source: "https://alibabacloud.com",
+            desc: "Qwen is the leading 'Open Weights' model from China."
+        },
+        {
+            name: "MiniMax", country: "CN", lat: 31.23, lng: 121.47,
+            money: 11400000000, moneyDisplay: "$11.4B (Valuation)",
+            compute: 15000, computeDisplay: "Cloud Rental",
+            users: 40000000, usersDisplay: "Character AI",
+            tech: "abab 6.5",
+            source: "https://hkex.com.hk",
+            desc: "Just IPO'd in Hong Kong (Jan '26). Massive valuation bump."
+        },
+        {
+            name: "Zhipu AI", country: "CN", lat: 39.99, lng: 116.33,
+            money: 4400000000, moneyDisplay: "$4.4B (Valuation)",
+            compute: 12000, computeDisplay: "SuperGLM",
+            users: 25000000, usersDisplay: "Academic/Gov",
+            tech: "GLM-4",
+            source: "https://hkex.com.hk",
+            desc: "IPO'd Jan '26. The 'OpenAI' of China (Tsinghua spin-off)."
         }
     ];
 
