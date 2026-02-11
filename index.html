@@ -1,114 +1,92 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>AI Tech Hubs: USA vs China</title>
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <title>AI Clusters: USA vs China</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif; }
-        #map { position: absolute; top: 0; bottom: 0; width: 100%; background-color: #0b0b0b; }
+        body { margin: 0; background: #0b0b0b; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #map { height: 100vh; width: 100vw; background: #0b0b0b; }
         
-        .map-overlay {
+        .custom-legend {
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            z-index: 1000;
+            background: rgba(15, 15, 15, 0.85);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 242, 255, 0.3);
             color: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            max-width: 300px;
-            z-index: 1;
+            backdrop-filter: blur(8px);
         }
 
-        h2 { margin: 0 0 10px; font-weight: 300; letter-spacing: 1px; }
-        .legend-item { display: flex; align-items: center; margin-bottom: 5px; font-size: 12px; }
-        .dot { height: 10px; width: 10px; border-radius: 50%; margin-right: 10px; }
+        h2 { margin: 0 0 10px 0; font-size: 18px; font-weight: 300; color: #00f2ff; text-transform: uppercase; letter-spacing: 2px; }
+        .item { margin: 8px 0; display: flex; align-items: center; font-size: 14px; }
+        .circle { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
+        
+        /* Glow animations for the points */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.5); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
     </style>
 </head>
 <body>
 
-<div class="map-overlay">
-    <h2>AI Power Index</h2>
-    <p style="font-size: 13px; color: #ccc;">Visualizing major AI clusters in the USA and China.</p>
-    <div class="legend-item"><span class="dot" style="background: #00f2ff; box-shadow: 0 0 10px #00f2ff;"></span> USA Hubs</div>
-    <div class="legend-item"><span class="dot" style="background: #ff3e3e; box-shadow: 0 0 10px #ff3e3e;"></span> China Hubs</div>
+<div class="custom-legend">
+    <h2>AI Hub Network</h2>
+    <div class="item"><div class="circle" style="background: #00f2ff; box-shadow: 0 0 8px #00f2ff;"></div> USA (Foundation Models)</div>
+    <div class="item"><div class="circle" style="background: #ff3e3e; box-shadow: 0 0 8px #ff3e3e;"></div> China (Hardware & Vertical AI)</div>
 </div>
 
 <div id="map"></div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // Replace this with your own Mapbox Access Token from mapbox.com
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDg1Z3IifQ.2b5ZQC95_9O_7BRmY7mY5Q';
-    
-    const map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/dark-v11', // High-end dark theme
-        center: [20, 30], // Centered between both regions
-        zoom: 1.8,
-        projection: 'globe' // Makes the map a 3D globe!
+    // Initialize map with a dark, minimalist theme
+    var map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false
+    }).setView([30, 10], 3);
+
+    // Use CartoDB's Dark Matter tiles (No token required!)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+    }).addTo(map);
+
+    const hubs = [
+        { name: "Silicon Valley", coords: [37.38, -122.08], country: "USA", info: "OpenAI, Meta, NVIDIA" },
+        { name: "Seattle", coords: [47.60, -122.33], country: "USA", info: "Microsoft, Amazon" },
+        { name: "New York", coords: [40.71, -74.00], country: "USA", info: "Hugging Face, Fintech AI" },
+        { name: "Beijing", coords: [39.90, 116.40], country: "China", info: "Baidu, ByteDance, Zhipu" },
+        { name: "Shenzhen", coords: [22.54, 114.05], country: "China", info: "Tencent, DJI, Huawei" },
+        { name: "Hangzhou", coords: [30.27, 120.15], country: "China", info: "Alibaba, Ant Group" }
+    ];
+
+    hubs.forEach(hub => {
+        const color = hub.country === "USA" ? "#00f2ff" : "#ff3e3e";
+        
+        // Add a "Glow" effect using a simple CircleMarker
+        L.circleMarker(hub.coords, {
+            radius: 12,
+            fillColor: color,
+            color: color,
+            weight: 1,
+            fillOpacity: 0.2
+        }).addTo(map);
+
+        // Add the solid center point
+        L.circleMarker(hub.coords, {
+            radius: 5,
+            fillColor: "white",
+            color: color,
+            weight: 2,
+            fillOpacity: 1
+        }).addTo(map)
+          .bindPopup(`<b style="color:#333">${hub.name}</b><br>${hub.info}`);
     });
 
-    map.on('style.load', () => {
-        map.setFog({
-            color: 'rgb(10, 10, 10)', // Lower atmosphere
-            'high-color': 'rgb(30, 30, 30)', // Upper atmosphere
-            'horizon-blend': 0.02
-        });
-    });
-
-    const geoData = {
-        "type": "FeatureCollection",
-        "features": [
-            { "type": "Feature", "properties": { "country": "USA", "name": "Silicon Valley" }, "geometry": { "type": "Point", "coordinates": [-122.08, 37.38] } },
-            { "type": "Feature", "properties": { "country": "USA", "name": "Seattle" }, "geometry": { "type": "Point", "coordinates": [-122.33, 47.60] } },
-            { "type": "Feature", "properties": { "country": "China", "name": "Beijing" }, "geometry": { "type": "Point", "coordinates": [116.40, 39.90] } },
-            { "type": "Feature", "properties": { "country": "China", "name": "Shenzhen" }, "geometry": { "type": "Point", "coordinates": [114.05, 22.54] } }
-        ]
-    };
-
-    map.on('load', () => {
-        map.addSource('ai-hubs', { type: 'geojson', data: geoData });
-
-        // Add a "Glow" layer
-        map.addLayer({
-            'id': 'ai-glow',
-            'type': 'circle',
-            'source': 'ai-hubs',
-            'paint': {
-                'circle-radius': 12,
-                'circle-blur': 1.5,
-                'circle-color': [
-                    'match', ['get', 'country'],
-                    'USA', '#00f2ff',
-                    'China', '#ff3e3e',
-                    '#ffffff'
-                ]
-            }
-        });
-
-        // Add the core point
-        map.addLayer({
-            'id': 'ai-points',
-            'type': 'circle',
-            'source': 'ai-hubs',
-            'paint': {
-                'circle-radius': 5,
-                'circle-color': 'white',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': [
-                    'match', ['get', 'country'],
-                    'USA', '#00f2ff',
-                    'China', '#ff3e3e',
-                    '#ffffff'
-                ]
-            }
-        });
-    });
 </script>
-
 </body>
 </html>
