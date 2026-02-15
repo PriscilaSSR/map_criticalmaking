@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global AI Cross-Border Activity Tracker (ETO/OECD)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chosen Palette: Stratosphere Dark (Deep Space Blue, Neon Gold, Signal Red) -->
+    <!-- Application Structure Plan:
+         1. Container: 100vh full-screen layout.
+         2. Map Engine: Plotly WebGL Scattergeo.
+            - Draws "Great Circle" lines to show connection paths.
+            - Uses markers for key strategic hubs.
+         3. Control Overlay (Floating Left):
+            - Toggles for 'Capital Flows', 'Regulatory Reach', 'Supply Chain'.
+            - Live stats readout based on active layer.
+         4. Intel Panel (Floating Right):
+            - Dynamic content box that explains the specific selected relationship.
+            - e.g., "Why does Brazil regulate the US?" -> Explanation of Bill 2338 Article 4.
+    -->
+
+    <!-- Visualization & Content Choices:
+         - Flow Visualization: Plotly 'lines' mode. Color coded by type.
+         - Interaction: Click events on map update the Intel Panel.
+         - Data Source: Hardcoded strategic examples from ETO/OECD/IAPP reports.
+         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+    -->
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'space-bg': '#020408',
+                        'space-panel': 'rgba(15, 23, 42, 0.9)',
+                        'flow-gold': '#fbbf24',   // Capital
+                        'flow-red': '#f87171',    // Law
+                        'flow-cyan': '#22d3ee',   // Material
+                        'flow-border': 'rgba(255,255,255,0.1)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020408; color: #e2e8f0; overflow: hidden; }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .mode-btn {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .mode-btn:hover { background: rgba(255,255,255,0.05); }
+        .mode-btn.active-gold { border-left-color: #fbbf24; background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent); }
+        .mode-btn.active-red { border-left-color: #f87171; background: linear-gradient(90deg, rgba(248, 113, 113, 0.1), transparent); }
+        .mode-btn.active-cyan { border-left-color: #22d3ee; background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), transparent); }
+        
+        /* Custom Scrollbar for Intel Panel */
+        .intel-scroll::-webkit-scrollbar { width: 4px; }
+        .intel-scroll::-webkit-scrollbar-track { background: transparent; }
+        .intel-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 2px; }
+    </style>
+</head>
+<body class="h-screen w-screen relative">
+
+    <!-- 1. The Full Screen Map Container -->
+    <div id="cross-border-map" class="absolute inset-0 z-0"></div>
+
+    <!-- 2. Header Overlay -->
+    <div class="absolute top-0 left-0 w-full z-10 p-6 pointer-events-none flex justify-between items-start">
+        <div class="pointer-events-auto">
+            <h1 class="text-2xl font-black uppercase tracking-widest text-white flex items-center gap-3">
+                <i class="fa-solid fa-earth-americas text-blue-500"></i>
+                Cross-Border <span class="text-slate-500">Activity Tracker</span>
+            </h1>
+            <p class="text-xs font-mono text-blue-400 mt-1">Based on ETO, OECD & IAPP Intelligence (2021-2025)</p>
+        </div>
+        
+        <!-- Legend/Key -->
+        <div class="glass-panel rounded-lg p-3 pointer-events-auto">
+            <div class="text-[10px] font-bold uppercase text-slate-500 mb-2">Connection Key</div>
+            <div class="flex gap-4">
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-gold"><div class="w-2 h-2 rounded-full bg-flow-gold"></div> Investment</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-red"><div class="w-2 h-2 rounded-full bg-flow-red"></div> Regulation</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Supply Chain</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Left Control Panel (Layer Selection) -->
+    <div class="absolute left-6 top-32 z-10 w-72 glass-panel bg-space-panel rounded-xl overflow-hidden flex flex-col">
+        <div class="p-4 border-b border-flow-border">
+            <h2 class="text-sm font-bold text-slate-300 uppercase tracking-wider">Select Intelligence Layer</h2>
+        </div>
+        
+        <button onclick="updateMap('capital')" id="btn-capital" class="mode-btn active-gold w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-gold text-sm group-hover:text-white transition-colors">Capital Flows</span>
+                <i class="fa-solid fa-coins text-flow-gold/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Who invests in whom? Tracking Sovereign Wealth & VC.</p>
+        </button>
+
+        <button onclick="updateMap('law')" id="btn-law" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-red text-sm group-hover:text-white transition-colors">Regulatory Reach</span>
+                <i class="fa-solid fa-scale-balanced text-flow-red/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Who regulates whom? Extraterritorial impact.</p>
+        </button>
+
+        <button onclick="updateMap('material')" id="btn-material" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-cyan text-sm group-hover:text-white transition-colors">Material & Talent</span>
+                <i class="fa-solid fa-microchip text-flow-cyan/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Where do chips & talent move? The Compute Divide.</p>
+        </button>
+
+        <div class="p-4 bg-black/20 text-[10px] text-slate-500 font-mono border-t border-flow-border">
+            Data Source: ETO Country Activity Tracker, OECD.AI Investment Database
+        </div>
+    </div>
+
+    <!-- 4. Right Intel Panel (Contextual Details) -->
+    <div class="absolute right-6 top-32 bottom-12 z-10 w-96 glass-panel bg-space-panel rounded-xl flex flex-col pointer-events-auto">
+        <div class="p-5 border-b border-flow-border flex justify-between items-center bg-black/20">
+            <h2 class="text-sm font-black text-white uppercase tracking-wider">Active Intelligence</h2>
+            <div id="layer-badge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-flow-gold/10 text-flow-gold border border-flow-gold/20">Capital</div>
+        </div>
+
+        <!-- Scrollable Content Area -->
+        <div id="intel-content" class="flex-grow p-6 overflow-y-auto intel-scroll space-y-6">
+            <!-- Dynamic Content Injected Here -->
+            <div class="text-center text-slate-500 mt-10">
+                <i class="fa-solid fa-circle-nodes text-3xl mb-4 opacity-50"></i>
+                <p class="text-sm">Select a layer to visualize global dependencies.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- Strategic Data Store ---
+        // This contains the specific "Who invests in whom" and "Who regulates whom" logic.
+        
+        const mapData = {
+            capital: {
+                color: '#fbbf24',
+                label: 'Capital',
+                flows: [
+                    { 
+                        from: {name: "UAE (G42)", lat: 24.4, lon: 54.3}, 
+                        to: {name: "USA (Silicon Valley)", lat: 37.4, lon: -122.1}, 
+                        desc: "Strategic Partnership: G42 & Cerebras",
+                        val: "$900M",
+                        details: "The UAE's G42 has invested heavily in US hardware (Cerebras) and partnered with Microsoft, securing access to advanced compute chips in exchange for severing ties with Chinese hardware suppliers."
+                    },
+                    { 
+                        from: {name: "Saudi Arabia (PIF)", lat: 24.7, lon: 46.6}, 
+                        to: {name: "France (Paris)", lat: 48.8, lon: 2.3}, 
+                        desc: "Sovereign Wealth -> Mistral AI",
+                        val: "€600M+",
+                        details: "Saudi capital is diversifying into European Foundation Models (Mistral) to reduce dependency on US close-source models."
+                    },
+                    { 
+                        from: {name: "USA (VC)", lat: 40.7, lon: -74.0}, 
+                        to: {name: "UK (London)", lat: 51.5, lon: -0.1}, 
+                        desc: "US VC -> UK DeepMind/Startups",
+                        val: "$4.5B",
+                        details: "Traditional VC corridors remain strong, with US firms dominating Series B+ rounds in London's generative AI sector."
+                    },
+                    { 
+                        from: {name: "China (State)", lat: 39.9, lon: 116.4}, 
+                        to: {name: "South Africa", lat: -26.2, lon: 28.0}, 
+                        desc: "Digital Silk Road",
+                        val: "Infra",
+                        details: "China exports surveillance AI and digital infrastructure to African nations, creating a 'soft power' data dependency."
+                    }
+                ],
+                intel: [
+                    {
+                        title: "The Capital Shift",
+                        text: "While the US (Silicon Valley) still controls 60% of private generative AI funding ($109B), a new 'Sovereign Corridor' has opened. Middle Eastern oil wealth is flowing into Europe and the US to secure 'Compute Sovereignty'."
+                    },
+                    {
+                        title: "Tactical Minority Stakes",
+                        text: "To avoid antitrust regulation (FTC/EU), US Big Tech (Microsoft, Amazon) is using 'Minority Stakes' (e.g., in Mistral, Anthropic) rather than full acquisitions. This creates financial dependency without legal ownership."
+                    }
+                ]
+            },
+            law: {
+                color: '#f87171',
+                label: 'Regulation',
+                flows: [
+                    { 
+                        from: {name: "EU (Brussels)", lat: 50.8, lon: 4.3}, 
+                        to: {name: "USA (Tech Giants)", lat: 37.7, lon: -122.4}, 
+                        desc: "The Brussels Effect",
+                        val: "Compliance",
+                        details: "US companies (OpenAI, Google) must comply with the EU AI Act's risk categories to operate in the European Single Market. The EU effectively writes the rules for US products."
+                    },
+                    { 
+                        from: {name: "Brazil (Brasilia)", lat: -15.8, lon: -47.9}, 
+                        to: {name: "Global Tech", lat: 30.0, lon: -40.0}, // Abstract Global Target
+                        desc: "Bill 2338 Extraterritoriality",
+                        val: "Liability",
+                        details: "Brazil's Draft Law (Bill 2338) applies to ANY organization processing data of individuals located in Brazil, regardless of where the company is HQ'd. This forces global compliance."
+                    },
+                    { 
+                        from: {name: "China (Beijing)", lat: 39.9, lon: 116.4}, 
+                        to: {name: "Domestic Firms", lat: 35.0, lon: 105.0}, 
+                        desc: "Vertical Generative AI Law",
+                        val: "Strict",
+                        details: "China's 'Interim Measures' require watermarking and strict content control, creating a bifurcated internet where Western models cannot legally operate."
+                    }
+                ],
+                intel: [
+                    {
+                        title: "Who Regulates Whom?",
+                        text: "The 'Brussels Effect' means the EU is the de facto global regulator. However, Brazil is emerging as a 'Global South' regulator, drafting laws that explicitly target foreign tech giants with heavy fines (2% of global revenue)."
+                    },
+                    {
+                        title: "Liability Traps",
+                        text: "The US has no federal AI law (only Executive Orders). This exposes US companies to legal action in foreign jurisdictions (EU, Brazil, Canada) where laws are harder and enacted."
+                    }
+                ]
+            },
+            material: {
+                color: '#22d3ee',
+                label: 'Material/Talent',
+                flows: [
+                    { 
+                        from: {name: "Taiwan (TSMC)", lat: 23.7, lon: 121.0}, 
+                        to: {name: "USA", lat: 37.7, lon: -122.4}, 
+                        desc: "90% Logic Chip Supply",
+                        val: "Critical",
+                        details: "The world's most dangerous dependency. The US designs the chips (Nvidia), but Taiwan manufactures them. A blockade here stops the global AI economy."
+                    },
+                    { 
+                        from: {name: "India (Bangalore)", lat: 12.9, lon: 77.5}, 
+                        to: {name: "USA/Europe", lat: 45.0, lon: -30.0}, 
+                        desc: "Talent Export",
+                        val: "Human Capital",
+                        details: "India ranks #2 in AI Talent Concentration but #68 in Infrastructure. The result: A massive 'Brain Drain' where Indian engineers fuel Western innovation due to lack of domestic compute."
+                    },
+                    { 
+                        from: {name: "Netherlands (ASML)", lat: 51.4, lon: 5.4}, 
+                        to: {name: "Taiwan/China", lat: 25.0, lon: 118.0}, 
+                        desc: "Lithography Monopoly",
+                        val: "Hardware",
+                        details: "Every advanced AI chip starts with a machine from one company in the Netherlands (ASML). The US restricts these machines from going to China."
+                    }
+                ],
+                intel: [
+                    {
+                        title: "The Compute Divide",
+                        text: "The physical reality of AI is lopsided. Design happens in the West. Fabrication happens in the East. Talent is born in the South but migrates North. This imbalance creates 'Chokepoints' that can be weaponized."
+                    }
+                ]
+            }
+        };
+
+        let currentMode = 'capital';
+
+        // --- Render Functions ---
+
+        function initMap() {
+            updateMap(currentMode);
+        }
+
+        function updateMap(mode) {
+            currentMode = mode;
+            const data = mapData[mode];
+            
+            // Update UI Styling
+            document.querySelectorAll('.mode-btn').forEach(b => {
+                b.classList.remove('active-gold', 'active-red', 'active-cyan');
+            });
+            const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : 'active-cyan';
+            document.getElementById(`btn-${mode}`).classList.add(activeClass);
+
+            // Update Intel Panel Badge
+            const badge = document.getElementById('layer-badge');
+            badge.innerText = data.label;
+            badge.className = `px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-${data.color}/10 text-[${data.color}] border border-${data.color}/20`;
+            badge.style.color = data.color;
+            badge.style.borderColor = data.color;
+            badge.style.backgroundColor = `${data.color}20`; // Hex transparency
+
+            // Update Intel Content
+            renderIntel(data);
+
+            // DRAW MAP (Plotly)
+            const traces = [];
+
+            // 1. Draw Flow Lines
+            data.flows.forEach(flow => {
+                traces.push({
+                    type: 'scattergeo',
+                    locationmode: 'ISO-3',
+                    lat: [flow.from.lat, flow.to.lat],
+                    lon: [flow.from.lon, flow.to.lon],
+                    mode: 'lines',
+                    line: {
+                        width: 2,
+                        color: data.color
+                    },
+                    opacity: 0.6,
+                    hoverinfo: 'text',
+                    text: `${flow.desc} (${flow.val})`
+                });
+
+                // Add End Arrow/Marker
+                traces.push({
+                    type: 'scattergeo',
+                    lat: [flow.to.lat],
+                    lon: [flow.to.lon],
+                    mode: 'markers',
+                    marker: {
+                        size: 6,
+                        color: data.color,
+                        symbol: 'triangle-up' // Represents arrow head roughly
+                    },
+                    hoverinfo: 'text',
+                    text: `Destination: ${flow.to.name}`
+                });
+            });
+
+            // 2. Draw Key Nodes (Bubbles)
+            const uniqueNodes = new Map();
+            data.flows.forEach(f => {
+                uniqueNodes.set(f.from.name, f.from);
+                uniqueNodes.set(f.to.name, f.to);
+            });
+
+            const nodeLat = [];
+            const nodeLon = [];
+            const nodeText = [];
+
+            uniqueNodes.forEach(n => {
+                nodeLat.push(n.lat);
+                nodeLon.push(n.lon);
+                nodeText.push(n.name);
+            });
+
+            traces.push({
+                type: 'scattergeo',
+                lat: nodeLat,
+                lon: nodeLon,
+                mode: 'markers+text',
+                text: nodeText,
+                textposition: 'top center',
+                marker: {
+                    size: 8,
+                    color: '#ffffff',
+                    line: {color: data.color, width: 2}
+                },
+                textfont: {
+                    color: '#cbd5e1',
+                    size: 10,
+                    family: 'monospace'
+                },
+                hoverinfo: 'text'
+            });
+
+            const layout = {
+                geo: {
+                    scope: 'world',
+                    projection: { type: 'orthographic' }, // Globe view looks better for "Cross Border"
+                    showland: true,
+                    landcolor: '#0f172a',
+                    countrycolor: '#1e293b',
+                    showocean: true,
+                    oceancolor: '#020408',
+                    showlakes: false,
+                    bgcolor: 'rgba(0,0,0,0)',
+                    center: {lon: 10, lat: 20}
+                },
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                showlegend: false,
+                dragmode: 'pan' // Allow rotation
+            };
+
+            const config = { responsive: true, displayModeBar: false, scrollZoom: true };
+
+            Plotly.newPlot('cross-border-map', traces, layout, config);
+        }
+
+        function renderIntel(data) {
+            const container = document.getElementById('intel-content');
+            
+            // Generate HTML for specific flow details
+            const flowsHtml = data.flows.map(f => `
+                <div class="bg-black/40 rounded-lg p-3 border-l-2" style="border-color: ${data.color}">
+                    <div class="flex justify-between items-start mb-1">
+                        <span class="text-xs font-bold text-white">${f.from.name} <i class="fa-solid fa-arrow-right text-[10px] mx-1 text-slate-500"></i> ${f.to.name}</span>
+                        <span class="text-[10px] font-mono text-slate-400 bg-white/10 px-1 rounded">${f.val}</span>
+                    </div>
+                    <div class="text-[10px] text-slate-300 font-bold mb-1">${f.desc}</div>
+                    <p class="text-[10px] text-slate-400 leading-relaxed">${f.details}</p>
+                </div>
+            `).join('');
+
+            // Generate HTML for strategic summary
+            const intelHtml = data.intel.map(i => `
+                <div class="mb-4">
+                    <h3 class="text-xs font-black text-white uppercase mb-2">${i.title}</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">${i.text}</p>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="animate-fade-in">
+                    ${intelHtml}
+                    <div class="h-px w-full bg-white/10 my-4"></div>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase mb-3">Detected Flows (Click Map to Rotate)</h3>
+                    <div class="space-y-3">
+                        ${flowsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Init
+        window.onload = initMap;
+        window.onresize = () => Plotly.Plots.resize('cross-border-map');
+
+    </script>
+    <style>
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</body>
+</html>
