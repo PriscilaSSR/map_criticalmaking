@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global AI Master Web: Data & Labor</title>
+    <title>Global AI Master Web: Talent & Labor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,7 +21,8 @@
                         'flow-purple': '#c084fc', // Innovation
                         'flow-green': '#10b981',  // Extraction (Eco)
                         'flow-orange': '#f97316', // Geopolitics (Military/State)
-                        'flow-pink': '#ec4899',   // Training Data & Labor
+                        'flow-pink': '#ec4899',   // Training Data & Reinforcement
+                        'flow-indigo': '#818cf8', // Global Talent & Brain Drain
                         'flow-border': 'rgba(255,255,255,0.1)'
                     }
                 }
@@ -46,6 +47,7 @@
         .mode-btn.active-green { border-left-color: #10b981; background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), transparent); }
         .mode-btn.active-orange { border-left-color: #f97316; background: linear-gradient(90deg, rgba(249, 115, 22, 0.1), transparent); }
         .mode-btn.active-pink { border-left-color: #ec4899; background: linear-gradient(90deg, rgba(236, 72, 153, 0.1), transparent); }
+        .mode-btn.active-indigo { border-left-color: #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1), transparent); }
         .mode-btn.active-all { border-left-color: #ffffff; background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent); border-right: 1px solid rgba(255,255,255,0.1); }
         
         .flow-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-left-width: 2px; }
@@ -70,20 +72,20 @@
     <div class="absolute top-0 left-0 w-full z-10 p-6 pointer-events-none flex justify-between items-start">
         <div class="pointer-events-auto">
             <h1 class="text-2xl font-black uppercase tracking-widest text-white flex items-center gap-3">
-                <i class="fa-solid fa-database text-pink-500"></i>
+                <i class="fa-solid fa-people-arrows text-indigo-500"></i>
                 Global AI <span class="text-slate-500">Master Web</span>
             </h1>
-            <p class="text-xs font-mono text-pink-400 mt-1">Data, Labor, & Defense (v5.0)</p>
+            <p class="text-xs font-mono text-indigo-400 mt-1">Talent, Labor, & Data (v6.0)</p>
         </div>
         
         <div class="glass-panel rounded-lg p-3 pointer-events-auto">
             <div class="text-[10px] font-bold uppercase text-slate-500 mb-2">Active Flow Layers</div>
             <div class="flex gap-4">
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-pink"><div class="w-2 h-2 rounded-full bg-flow-pink"></div> Data & Labor</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-indigo"><div class="w-2 h-2 rounded-full bg-flow-indigo"></div> Brain Drain</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-pink"><div class="w-2 h-2 rounded-full bg-flow-pink"></div> RLHF/Data</div>
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-orange"><div class="w-2 h-2 rounded-full bg-flow-orange"></div> Geopolitics</div>
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-gold"><div class="w-2 h-2 rounded-full bg-flow-gold"></div> Capital</div>
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Supply</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-green"><div class="w-2 h-2 rounded-full bg-flow-green"></div> Eco</div>
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-purple"><div class="w-2 h-2 rounded-full bg-flow-purple"></div> Code</div>
             </div>
         </div>
@@ -101,15 +103,24 @@
                 <span class="font-bold text-white text-sm group-hover:text-white transition-colors">Global Synthesis</span>
                 <i class="fa-solid fa-globe text-white/50"></i>
             </div>
-            <p class="text-[10px] text-slate-300 leading-tight">Visualize 50+ flows including Data & RLHF Labor.</p>
+            <p class="text-[10px] text-slate-300 leading-tight">Visualize 60+ flows including Talent Migration.</p>
+        </button>
+
+        <!-- NEW: TALENT BUTTON -->
+        <button onclick="updateMap('talent')" id="btn-talent" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-indigo text-sm group-hover:text-white transition-colors">Global Talent & Brain Drain</span>
+                <i class="fa-solid fa-graduation-cap text-flow-indigo/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Indian Engineers, Chinese Researchers, & The West.</p>
         </button>
 
         <button onclick="updateMap('training_data')" id="btn-training_data" class="mode-btn w-full text-left p-4 group">
             <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-flow-pink text-sm group-hover:text-white transition-colors">Training Data & Labor</span>
+                <span class="font-bold text-flow-pink text-sm group-hover:text-white transition-colors">Training Data & Reinforcement</span>
                 <i class="fa-solid fa-users-viewfinder text-flow-pink/50"></i>
             </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Common Crawl, Reddit, RLHF (Kenya/Philippines).</p>
+            <p class="text-[10px] text-slate-400 leading-tight">RLHF Workers, Reddit, Common Crawl, & Copyright.</p>
         </button>
         
         <button onclick="updateMap('geopolitics')" id="btn-geopolitics" class="mode-btn w-full text-left p-4 group">
@@ -161,7 +172,7 @@
         </button>
 
         <div class="p-3 bg-black/40 text-[9px] text-slate-600 font-mono border-t border-flow-border text-center mt-auto">
-            DATA: ETO, OECD, IAPP, DOD, FTC, COMMON CRAWL
+            DATA: ETO, OECD, IAPP, DOD, FTC, CSET
         </div>
     </div>
 
@@ -180,10 +191,23 @@
     <script>
         // --- MASTER DATA STORE ---
         const mapData = {
-            // 7. TRAINING DATA & LABOR (New Layer)
+            // 8. TALENT & BRAIN DRAIN (New Layer)
+            talent: {
+                color: '#818cf8',
+                label: 'Global Talent & Brain Drain',
+                flows: [
+                    { id: 'tal-india', from: {name: "IITs (India)", lat: 22.5, lon: 77.0}, to: {name: "Silicon Valley", lat: 37.4, lon: -122.1}, desc: "The CEO Pipeline", val: "High Migration", details: "Top graduates from Indian Institutes of Technology (IITs) form a massive portion of the US tech workforce, including CEOs of Microsoft and Google. A significant 'brain drain' for India." },
+                    { id: 'tal-china', from: {name: "Tsinghua Univ (Beijing)", lat: 39.9, lon: 116.3}, to: {name: "US Research Labs", lat: 37.7, lon: -122.4}, desc: "Research Talent", val: "Top 1% Researchers", details: "Despite geopolitical tensions, a large percentage of top-tier AI papers in the US are co-authored by Chinese nationals. The US relies heavily on Chinese talent for PhD-level research." },
+                    { id: 'tal-canada', from: {name: "Canada (Toronto/Mtl)", lat: 43.7, lon: -79.4}, to: {name: "US Tech Giants", lat: 37.4, lon: -122.0}, desc: "The Godfather Legacy", val: "Acquisition", details: "Pioneers like Hinton and Bengio built AI foundations in Canada, but huge numbers of their students and startups were acquired by US giants (Google Brain, DeepMind)." },
+                    { id: 'tal-europe', from: {name: "Eastern Europe", lat: 52.0, lon: 21.0}, to: {name: "Western Hubs", lat: 51.5, lon: -0.1}, desc: "Developer Flow", val: "Remote/Relo", details: "Significant migration of software engineering talent from Poland, Romania, and Ukraine to UK/US tech hubs, driven by wage disparities." },
+                    { id: 'tal-tsmc', from: {name: "Taiwan (Engineers)", lat: 23.0, lon: 121.0}, to: {name: "Arizona (TSMC Fab)", lat: 33.4, lon: -112.0}, desc: "Process Engineers", val: "Knowledge Transfer", details: "TSMC is sending hundreds of Taiwanese engineers to Arizona to staff the new Fab 21, creating cultural and operational friction in an attempt to transplant manufacturing culture." }
+                ],
+                intel: [{ title: "The Human Element", text: "Hardware stays in the East, but Human Capital flows West. The US maintains dominance not just by training its own, but by absorbing the top 1% of global talent." }]
+            },
+            // 7. TRAINING DATA & REINFORCEMENT (Renamed)
             training_data: {
                 color: '#ec4899',
-                label: 'Training Data & Labor',
+                label: 'Training Data & Reinforcement',
                 flows: [
                     { id: 'data-crawl', from: {name: "Common Crawl (VA)", lat: 39.0, lon: -77.4}, to: {name: "Global LLMs", lat: 37.7, lon: -122.4}, desc: "The Web Scrape", val: "Petabytes", details: "The backbone of AI. The Common Crawl Foundation scrapes the entire internet to create the base dataset for GPT, Llama, and Claude." },
                     { id: 'data-rlhf-ph', from: {name: "Philippines (Manila)", lat: 14.6, lon: 121.0}, to: {name: "Scale AI (SF)", lat: 37.7, lon: -122.4}, desc: "RLHF Labor", val: "$2/hour", details: "The 'Ghost Work' of AI. Tens of thousands of workers in the Global South annotate text to align models and filter toxic content." },
@@ -301,7 +325,7 @@
             currentMode = mode;
             
             // UI Styling
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple', 'active-green', 'active-orange', 'active-pink', 'active-all'));
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple', 'active-green', 'active-orange', 'active-pink', 'active-indigo', 'active-all'));
             
             let badgeText = "";
             let badgeColor = "";
@@ -311,7 +335,7 @@
                 badgeText = "Global Synthesis";
                 badgeColor = "#ffffff";
             } else {
-                const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : mode === 'extraction' ? 'active-green' : mode === 'geopolitics' ? 'active-orange' : mode === 'training_data' ? 'active-pink' : 'active-purple';
+                const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : mode === 'extraction' ? 'active-green' : mode === 'geopolitics' ? 'active-orange' : mode === 'training_data' ? 'active-pink' : mode === 'talent' ? 'active-indigo' : 'active-purple';
                 document.getElementById(`btn-${mode}`).classList.add(activeClass);
                 badgeText = mapData[mode].label;
                 badgeColor = mapData[mode].color;
@@ -327,7 +351,7 @@
             let traces = [];
             let sidebarHTML = `<div class="animate-fade-in">`;
             
-            const layersToRender = mode === 'all' ? ['geopolitics', 'capital', 'training_data', 'material', 'extraction', 'open_source', 'law'] : [mode];
+            const layersToRender = mode === 'all' ? ['geopolitics', 'capital', 'talent', 'training_data', 'material', 'extraction', 'open_source', 'law'] : [mode];
             
             layersToRender.forEach(layerKey => {
                 const data = mapData[layerKey];
