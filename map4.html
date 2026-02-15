@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global AI Master Web: Complete Synthesis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'space-bg': '#020408',
+                        'space-panel': 'rgba(15, 23, 42, 0.95)',
+                        'flow-gold': '#fbbf24',   // Capital
+                        'flow-red': '#f87171',    // Law
+                        'flow-cyan': '#22d3ee',   // Material (Chips)
+                        'flow-purple': '#c084fc', // Innovation
+                        'flow-green': '#10b981',  // Extraction (Eco)
+                        'flow-border': 'rgba(255,255,255,0.1)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #020408; color: #e2e8f0; overflow: hidden; font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+        .mode-btn { transition: all 0.3s ease; border-left: 3px solid transparent; }
+        .mode-btn:hover { background: rgba(255,255,255,0.05); }
+        .mode-btn.active-gold { border-left-color: #fbbf24; background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent); }
+        .mode-btn.active-red { border-left-color: #f87171; background: linear-gradient(90deg, rgba(248, 113, 113, 0.1), transparent); }
+        .mode-btn.active-cyan { border-left-color: #22d3ee; background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), transparent); }
+        .mode-btn.active-purple { border-left-color: #c084fc; background: linear-gradient(90deg, rgba(192, 132, 252, 0.1), transparent); }
+        .mode-btn.active-green { border-left-color: #10b981; background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), transparent); }
+        .mode-btn.active-all { border-left-color: #ffffff; background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent); border-right: 1px solid rgba(255,255,255,0.1); }
+        
+        .flow-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-left-width: 2px; }
+        .flow-card:hover { transform: translateX(4px); background: rgba(255,255,255,0.05); }
+        .flow-card.active-card { 
+            background: rgba(255,255,255,0.1); 
+            transform: scale(1.02); 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border-left-width: 4px;
+        }
+
+        .intel-scroll::-webkit-scrollbar { width: 4px; }
+        .intel-scroll::-webkit-scrollbar-track { background: transparent; }
+        .intel-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 2px; }
+    </style>
+</head>
+<body class="h-screen w-screen relative">
+
+    <div id="cross-border-map" class="absolute inset-0 z-0"></div>
+
+    <!-- Header Overlay -->
+    <div class="absolute top-0 left-0 w-full z-10 p-6 pointer-events-none flex justify-between items-start">
+        <div class="pointer-events-auto">
+            <h1 class="text-2xl font-black uppercase tracking-widest text-white flex items-center gap-3">
+                <i class="fa-solid fa-network-wired text-indigo-500"></i>
+                Global AI <span class="text-slate-500">Master Web</span>
+            </h1>
+            <p class="text-xs font-mono text-indigo-400 mt-1">Complete Interdependency Database (2021-2025)</p>
+        </div>
+        
+        <div class="glass-panel rounded-lg p-3 pointer-events-auto">
+            <div class="text-[10px] font-bold uppercase text-slate-500 mb-2">Active Flow Layers</div>
+            <div class="flex gap-4">
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-gold"><div class="w-2 h-2 rounded-full bg-flow-gold"></div> Capital</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-red"><div class="w-2 h-2 rounded-full bg-flow-red"></div> Law</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Supply Chain</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-green"><div class="w-2 h-2 rounded-full bg-flow-green"></div> Extraction</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-purple"><div class="w-2 h-2 rounded-full bg-flow-purple"></div> Innovation</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Control Panel -->
+    <div class="absolute left-6 top-32 z-10 w-72 glass-panel bg-space-panel rounded-xl overflow-hidden flex flex-col pointer-events-auto max-h-[calc(100vh-160px)]">
+        <div class="p-4 border-b border-flow-border bg-black/20">
+            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Strategic Lens</h2>
+        </div>
+        
+        <!-- ALL LAYERS BUTTON -->
+        <button onclick="updateMap('all')" id="btn-all" class="mode-btn active-all w-full text-left p-4 group border-b border-flow-border">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-white text-sm group-hover:text-white transition-colors">Global Synthesis</span>
+                <i class="fa-solid fa-globe text-white/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-300 leading-tight">View all 30+ flows simultaneously.</p>
+        </button>
+        
+        <button onclick="updateMap('capital')" id="btn-capital" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-gold text-sm group-hover:text-white transition-colors">Capital Flows</span>
+                <i class="fa-solid fa-coins text-flow-gold/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Microsoft, G42, SoftBank & Digital Silk Road.</p>
+        </button>
+
+        <button onclick="updateMap('material')" id="btn-material" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-cyan text-sm group-hover:text-white transition-colors">Chip Supply Chain</span>
+                <i class="fa-solid fa-microchip text-flow-cyan/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">ASML, TSMC, Malaysia, Quartz, & Chemicals.</p>
+        </button>
+
+        <button onclick="updateMap('extraction')" id="btn-extraction" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-green text-sm group-hover:text-white transition-colors">Deep Extraction</span>
+                <i class="fa-solid fa-gem text-flow-green/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Cobalt, Copper, Water, & E-Waste.</p>
+        </button>
+
+        <button onclick="updateMap('open_source')" id="btn-open_source" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-purple text-sm group-hover:text-white transition-colors">Innovation Layer</span>
+                <i class="fa-solid fa-code-branch text-flow-purple/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Hugging Face, Llama, Falcon, & DeepSeek.</p>
+        </button>
+
+        <button onclick="updateMap('law')" id="btn-law" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-red text-sm group-hover:text-white transition-colors">Regulatory Reach</span>
+                <i class="fa-solid fa-gavel text-flow-red/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Brussels Effect, China CAC, & Brazil Bill 2338.</p>
+        </button>
+
+        <div class="p-3 bg-black/40 text-[9px] text-slate-600 font-mono border-t border-flow-border text-center mt-auto">
+            DATA: ETO, OECD, IAPP, USGS
+        </div>
+    </div>
+
+    <!-- Right Intel Panel -->
+    <div class="absolute right-6 top-32 bottom-12 z-10 w-96 glass-panel bg-space-panel rounded-xl flex flex-col pointer-events-auto">
+        <div class="p-5 border-b border-flow-border flex justify-between items-center bg-black/20">
+            <h2 class="text-xs font-black text-white uppercase tracking-wider">Strategic Analysis</h2>
+            <div id="layer-badge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-white/10 text-white border border-white/20">Synthesis</div>
+        </div>
+
+        <div id="intel-content" class="flex-grow p-6 overflow-y-auto intel-scroll space-y-6">
+            <!-- Content Injected via JS -->
+        </div>
+    </div>
+
+    <script>
+        // --- MASTER DATA STORE ---
+        const mapData = {
+            // 1. CAPITAL LAYER (Investments)
+            capital: {
+                color: '#fbbf24',
+                label: 'Capital Flows',
+                flows: [
+                    { id: 'cap-msft', from: {name: "Microsoft (USA)", lat: 47.6, lon: -122.3}, to: {name: "OpenAI (SF)", lat: 37.7, lon: -122.4}, desc: "The Anchor Investment", val: "$13 Billion", details: "Microsoft provides the Azure compute credits that keep ChatGPT running. This is the bedrock investment of the generative AI era." },
+                    { id: 'cap-g42', from: {name: "G42 (UAE)", lat: 24.4, lon: 54.3}, to: {name: "Cerebras (USA)", lat: 37.3, lon: -122.0}, desc: "Hardware Access", val: "$900M+", details: "UAE trades capital for non-Nvidia hardware access, securing supply chains for its 'Jais' Arabic LLM." },
+                    { id: 'cap-amzn', from: {name: "Amazon (USA)", lat: 47.6, lon: -122.3}, to: {name: "Anthropic (SF)", lat: 37.7, lon: -122.4}, desc: "Claude Backing", val: "$4 Billion", details: "Amazon's answer to the MSFT/OpenAI alliance, securing Anthropic as a primary model on AWS Bedrock." },
+                    { id: 'cap-soft', from: {name: "SoftBank (Japan)", lat: 35.6, lon: 139.6}, to: {name: "Arm (UK)", lat: 52.2, lon: 0.1}, desc: "Strategic Control", val: "90% Stake", details: "Japanese capital controls the architectural standard (Arm) for nearly all mobile/IoT chips globally." },
+                    { id: 'cap-silk', from: {name: "China (State)", lat: 39.9, lon: 116.4}, to: {name: "Africa (Infrastructure)", lat: 9.0, lon: 7.4}, desc: "Digital Silk Road", val: "Surveillance", details: "China exports 'Safe City' AI surveillance tech to nations like Nigeria in exchange for data access and influence." },
+                    { id: 'cap-nvda', from: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, to: {name: "CoreWeave (USA)", lat: 40.7, lon: -74.2}, desc: "GPU Financing", val: "Debt/Equity", details: "Nvidia invests in its own customers (CoreWeave Cloud) to ensure high demand for H100 chips." }
+                ],
+                intel: [{ title: "Nation-State VC", text: "Sovereign funds (UAE, Saudi, China) are now competing with Silicon Valley VC to secure compute power." }]
+            },
+            // 2. MATERIAL LAYER (Chips Supply Chain)
+            material: {
+                color: '#22d3ee',
+                label: 'Chip Supply Chain',
+                flows: [
+                    { id: 'mat-quartz', from: {name: "Spruce Pine (USA)", lat: 35.9, lon: -82.0}, to: {name: "Global Fabs", lat: 23.0, lon: 120.2}, desc: "High-Purity Quartz", val: "Crucible Essential", details: "A single mine in North Carolina provides the ultra-pure quartz crucibles needed to melt silicon for virtually every chip." },
+                    { id: 'mat-asml', from: {name: "ASML (Netherlands)", lat: 51.4, lon: 5.4}, to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, desc: "EUV Monopoly", val: "Critical Node", details: "No ASML EUV machines = No Nvidia H100s. A Dutch monopoly on the machines that print the brain of AI." },
+                    { id: 'mat-neon', from: {name: "China (Suppliers)", lat: 35.0, lon: 105.0}, to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, desc: "Neon Gas", val: "Laser Gas", details: "Neon gas is required for deep UV lasers. Supply chains shifted to China following Ukraine disruptions." },
+                    { id: 'mat-photo', from: {name: "Japan (JSR)", lat: 35.6, lon: 139.6}, to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, desc: "Photoresists", val: "Chemicals", details: "Japan controls specialized photoresists. Taiwan's fabs cannot operate without these chemicals." },
+                    { id: 'mat-pkg', from: {name: "Malaysia (Penang)", lat: 5.4, lon: 100.3}, to: {name: "Global Market", lat: 20.0, lon: 0.0}, desc: "Packaging Hub", val: "Backend", details: "Malaysia is the global chokepoint for 'Packaging'—the final assembly step for Intel and AMD chips." },
+                    { id: 'mat-fox', from: {name: "Foxconn (Zhengzhou)", lat: 34.7, lon: 113.6}, to: {name: "Apple/Dell (USA)", lat: 37.7, lon: -122.0}, desc: "Server Assembly", val: "Labor", details: "AI servers are assembled in China/Vietnam before shipping to US data centers." }
+                ],
+                intel: [{ title: "The Quartz Bottleneck", text: "The supply chain is hyper-efficient but brittle. A single disruption in NC or Taiwan halts global progress." }]
+            },
+            // 3. EXTRACTION LAYER (Ecological)
+            extraction: {
+                color: '#10b981',
+                label: 'Deep Extraction',
+                flows: [
+                    { id: 'ext-cobalt', from: {name: "DRC (Katanga)", lat: -10.4, lon: 25.2}, to: {name: "Battery Fabs", lat: 30.0, lon: 120.0}, desc: "Cobalt Supply", val: "70% Global", details: "Essential for Data Center UPS batteries. 70% mined in Congo, often under brutal conditions." },
+                    { id: 'ext-copper', from: {name: "Chile (Escondida)", lat: -24.2, lon: -69.0}, to: {name: "Global Grid", lat: 20.0, lon: 0.0}, desc: "Copper", val: "Grid Upgrade", details: "AI Racks consume 3-4x power, requiring massive copper cabling upgrades from South America." },
+                    { id: 'ext-gallium', from: {name: "China (Interior)", lat: 35.0, lon: 105.0}, to: {name: "Global Fabs", lat: 23.0, lon: 120.2}, desc: "Gallium", val: "98% Control", details: "Chokepoint Mineral. China controls 98% of Gallium used in radio/optics chips." },
+                    { id: 'ext-water-us', from: {name: "Aquifer (VA)", lat: 38.0, lon: -78.0}, to: {name: "Data Center Alley", lat: 39.0, lon: -77.4}, desc: "Water Draw", val: "Cooling", details: "Data Center Alley in Virginia draws millions of gallons daily from local watersheds." },
+                    { id: 'ext-water-az', from: {name: "Colorado River", lat: 36.0, lon: -114.7}, to: {name: "Arizona Fabs", lat: 33.4, lon: -112.0}, desc: "Fab Water", val: "Scarcity", details: "Fabs in the Arizona desert require ultra-pure water, competing with agriculture." },
+                    { id: 'ext-waste', from: {name: "Global North", lat: 40.0, lon: -40.0}, to: {name: "Ghana", lat: 5.5, lon: -0.2}, desc: "E-Waste Flow", val: "Toxic", details: "Obsolete GPUs end up in Agbogbloshie, Ghana, releasing toxic fumes during scrap recovery." }
+                ],
+                intel: [{ title: "Ecological Debt", text: "AI runs on Congolese Cobalt, Chilean Copper, and depletes ancient aquifers." }]
+            },
+            // 4. INNOVATION LAYER (Open Source)
+            open_source: {
+                color: '#c084fc',
+                label: 'Innovation Layer',
+                flows: [
+                    { id: 'os-hf', from: {name: "Hugging Face (Paris)", lat: 48.8, lon: 2.3}, to: {name: "Global Devs", lat: 20.0, lon: 0.0}, desc: "The Central Hub", val: "1M+ Models", details: "The primary artery for model distribution, hosting weights from Meta, Google, and Mistral." },
+                    { id: 'os-meta', from: {name: "Meta (USA)", lat: 37.4, lon: -122.1}, to: {name: "Alibaba (China)", lat: 30.2, lon: 120.1}, desc: "Llama Leakage", val: "Foundation", details: "Meta's Llama architecture is the standard for Chinese sovereign models." },
+                    { id: 'os-falcon', from: {name: "TII (UAE)", lat: 24.4, lon: 54.3}, to: {name: "Global Open Source", lat: 10.0, lon: 20.0}, desc: "Falcon Series", val: "Sovereign OS", details: "Abu Dhabi's TII released 'Falcon', asserting the Middle East as a code contributor." },
+                    { id: 'os-mistral', from: {name: "Mistral (France)", lat: 48.8, lon: 2.3}, to: {name: "Microsoft (USA)", lat: 47.6, lon: -122.3}, desc: "Mixtral Deal", val: "Distribution", details: "France's Mistral relies on Microsoft Azure for mass distribution." },
+                    { id: 'os-deep', from: {name: "DeepSeek (China)", lat: 30.2, lon: 120.1}, to: {name: "US Academia", lat: 42.3, lon: -71.0}, desc: "MoE Innovation", val: "Efficiency", details: "DeepSeek-V2's efficiency innovations are studied by Western researchers." },
+                    { id: 'os-eleu', from: {name: "EleutherAI", lat: 40.7, lon: -74.0}, to: {name: "Research Labs", lat: 51.5, lon: -0.1}, desc: "The Pile", val: "Dataset", details: "Created standard open datasets (The Pile) used to train models globally." }
+                ],
+                intel: [{ title: "The Weight Leak", text: "Software is fluid. Once weights are uploaded, they bypass physical export controls." }]
+            },
+            // 5. LAW LAYER (Regulation) - RESTORED
+            law: {
+                color: '#f87171',
+                label: 'Regulatory Reach',
+                flows: [
+                    { id: 'law-eu', from: {name: "EU (Brussels)", lat: 50.8, lon: 4.3}, to: {name: "US Tech", lat: 37.7, lon: -122.4}, desc: "Brussels Effect", val: "Compliance", details: "EU AI Act forces US companies to alter products globally for market access." },
+                    { id: 'law-chn', from: {name: "China (CAC)", lat: 39.9, lon: 116.4}, to: {name: "Domestic AI", lat: 35.0, lon: 105.0}, desc: "CAC Registry", val: "Control", details: "China requires all generative AI to be registered and adhere to socialist values." },
+                    { id: 'law-bra', from: {name: "Brazil (Brasilia)", lat: -15.8, lon: -47.9}, to: {name: "Global Internet", lat: 0.0, lon: -30.0}, desc: "Bill 2338", val: "Extraterritorial", details: "Brazil's draft law applies to anyone processing Brazilian data, regardless of location." },
+                    { id: 'law-uk', from: {name: "UK Safety Inst.", lat: 51.5, lon: -0.1}, to: {name: "Foundation Labs", lat: 37.7, lon: -122.4}, desc: "Safety Testing", val: "Voluntary", details: "UK AISI secured agreements to pre-test models from OpenAI/Google." },
+                    { id: 'law-un', from: {name: "UN (Advisory)", lat: 40.7, lon: -74.0}, to: {name: "Global Policy", lat: 46.2, lon: 6.1}, desc: "Global Body", val: "Framework", details: "UN's push for an 'IPCC for AI' to create global scientific consensus." }
+                ],
+                intel: [{ title: "Splinternet", text: "Three regulatory blocs: EU (Rights), China (Control), US (Innovation)." }]
+            }
+        };
+
+        let currentMode = 'all'; 
+
+        function initMap() {
+            updateMap(currentMode);
+            
+            // Map Click Handler
+            document.getElementById('cross-border-map').on('plotly_click', function(data){
+                const pt = data.points[0];
+                if(pt && pt.data.customdata) {
+                    const flowId = pt.data.customdata[0];
+                    focusSidebarCard(flowId);
+                }
+            });
+        }
+
+        function updateMap(mode) {
+            currentMode = mode;
+            
+            // UI Styling
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple', 'active-green', 'active-all'));
+            
+            let badgeText = "";
+            let badgeColor = "";
+            
+            if (mode === 'all') {
+                document.getElementById('btn-all').classList.add('active-all');
+                badgeText = "Global Synthesis";
+                badgeColor = "#ffffff";
+            } else {
+                const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : mode === 'extraction' ? 'active-green' : 'active-purple';
+                document.getElementById(`btn-${mode}`).classList.add(activeClass);
+                badgeText = mapData[mode].label;
+                badgeColor = mapData[mode].color;
+            }
+
+            const badge = document.getElementById('layer-badge');
+            badge.innerText = badgeText;
+            badge.style.color = badgeColor;
+            badge.style.borderColor = badgeColor;
+            badge.style.backgroundColor = `${badgeColor}20`;
+
+            // Prepare Data for Plotly & Sidebar
+            let traces = [];
+            let sidebarHTML = `<div class="animate-fade-in">`;
+            
+            const layersToRender = mode === 'all' ? ['capital', 'material', 'extraction', 'open_source', 'law'] : [mode];
+            
+            layersToRender.forEach(layerKey => {
+                const data = mapData[layerKey];
+
+                // 1. Sidebar Content
+                if (mode === 'all') {
+                    sidebarHTML += `<h3 class="text-[10px] font-black uppercase mt-6 mb-2 pb-1 border-b border-white/10" style="color:${data.color}">${data.label}</h3>`;
+                } else {
+                     const intelHtml = data.intel.map(i => `
+                        <div class="mb-5">
+                            <h3 class="text-xs font-black text-white uppercase mb-2 border-b border-white/10 pb-1">${i.title}</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed font-light">${i.text}</p>
+                        </div>
+                    `).join('');
+                    sidebarHTML += intelHtml + `<div class="h-px w-full bg-white/10 my-4"></div>`;
+                }
+
+                sidebarHTML += `<div class="space-y-3">`;
+                data.flows.forEach(f => {
+                     sidebarHTML += `
+                        <div id="card-${f.id}" onclick="flyToFlow('${f.id}', ${f.from.lat}, ${f.from.lon}, ${f.to.lat}, ${f.to.lon})" 
+                             class="flow-card bg-black/40 rounded-lg p-3 border-l-2 hover:bg-white/5 cursor-pointer relative overflow-hidden group" 
+                             style="border-color: ${data.color}">
+                             
+                            <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i class="fa-solid fa-crosshairs text-slate-500 text-xs"></i>
+                            </div>
+
+                            <div class="flex justify-between items-start mb-1 pr-4">
+                                <span class="text-xs font-bold text-white truncate max-w-[70%]">${f.from.name}</span>
+                                <span class="text-[9px] font-mono text-slate-300 bg-white/10 px-1 rounded whitespace-nowrap">${f.val}</span>
+                            </div>
+                            <div class="text-[9px] text-slate-500 mb-1 flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-down"></i> ${f.to.name}
+                            </div>
+                            <div class="text-[10px] text-slate-200 font-bold mb-1" style="color:${data.color}">${f.desc}</div>
+                            <p class="text-[10px] text-slate-400 leading-relaxed">${f.details}</p>
+                        </div>`;
+                });
+                sidebarHTML += `</div>`;
+
+                // 2. Plotly Traces
+                // Flow Lines
+                data.flows.forEach(flow => {
+                    traces.push({
+                        type: 'scattergeo',
+                        locationmode: 'ISO-3',
+                        lat: [flow.from.lat, flow.to.lat],
+                        lon: [flow.from.lon, flow.to.lon],
+                        mode: 'lines',
+                        line: { width: 1.5, color: data.color },
+                        opacity: 0.6,
+                        hoverinfo: 'text',
+                        text: `${flow.desc}: ${flow.from.name} -> ${flow.to.name}`,
+                        customdata: [flow.id] 
+                    });
+
+                    // End Marker
+                    traces.push({
+                        type: 'scattergeo',
+                        lat: [flow.to.lat],
+                        lon: [flow.to.lon],
+                        mode: 'markers',
+                        marker: { size: 5, color: data.color, symbol: 'triangle-up' },
+                        hoverinfo: 'none',
+                        customdata: [flow.id]
+                    });
+                });
+
+                // Nodes
+                const uniqueNodes = new Map();
+                data.flows.forEach(f => {
+                    uniqueNodes.set(f.from.name, f.from);
+                    uniqueNodes.set(f.to.name, f.to);
+                });
+                const nodeLat = [], nodeLon = [], nodeText = [], nodeIds = [];
+                uniqueNodes.forEach((n, name) => {
+                    nodeLat.push(n.lat);
+                    nodeLon.push(n.lon);
+                    nodeText.push(n.name);
+                    const relatedFlow = data.flows.find(f => f.from.name === name || f.to.name === name);
+                    nodeIds.push(relatedFlow ? relatedFlow.id : null);
+                });
+
+                traces.push({
+                    type: 'scattergeo',
+                    lat: nodeLat,
+                    lon: nodeLon,
+                    mode: 'markers+text',
+                    text: nodeText,
+                    textposition: 'top center',
+                    marker: { size: 6, color: '#ffffff', line: {color: data.color, width: 2} },
+                    textfont: { color: '#cbd5e1', size: 9, family: 'Inter' },
+                    hoverinfo: 'text',
+                    customdata: nodeIds
+                });
+            });
+
+            sidebarHTML += `</div>`;
+            document.getElementById('intel-content').innerHTML = sidebarHTML;
+
+            const layout = {
+                geo: {
+                    scope: 'world',
+                    projection: { type: 'orthographic', rotation: {lon: 10, lat: 20} },
+                    showland: true,
+                    landcolor: '#0f172a',
+                    countrycolor: '#334155',
+                    showocean: true,
+                    oceancolor: '#020408',
+                    showlakes: false,
+                    bgcolor: 'rgba(0,0,0,0)',
+                },
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                showlegend: false,
+                dragmode: 'pan'
+            };
+
+            Plotly.react('cross-border-map', traces, layout, { responsive: true, displayModeBar: false });
+        }
+
+        function flyToFlow(id, lat1, lon1, lat2, lon2) {
+            document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('active-card'));
+            const card = document.getElementById(`card-${id}`);
+            if(card) card.classList.add('active-card');
+
+            const centerLon = (lon1 + lon2) / 2;
+            const centerLat = (lat1 + lat2) / 2;
+
+            Plotly.animate('cross-border-map', {
+                layout: { geo: { projection: { rotation: { lon: centerLon, lat: centerLat } } } }
+            }, { transition: { duration: 1500, easing: 'cubic-in-out' }, frame: { duration: 1500 } });
+        }
+
+        function focusSidebarCard(flowId) {
+            const card = document.getElementById(`card-${flowId}`);
+            if(card) {
+                document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('active-card'));
+                card.classList.add('active-card');
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        window.onload = initMap;
+        window.onresize = () => Plotly.Plots.resize('cross-border-map');
+
+    </script>
+    <style>
+        .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</body>
+</html>
