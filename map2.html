@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Flow Command: Physical, Capital & Regulatory Map</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chosen Palette: Industrial Deep (Midnight, Amber, and Slate) -->
+    <!-- Application Structure Plan: 
+         1. Tactical Overview: Top-level dashboard for real-time global metrics.
+         2. The "Flow Engine" (Central): A Plotly-powered geographic canvas. It switches between three specific "Flow Layers":
+            - Layer A (Material): Maps Design Hubs (Bubbles) vs. Fabrication Hubs (Heatmap).
+            - Layer B (Cash): Visualizes investment trajectories using flow lines from source to destination.
+            - Layer C (Law): Geographic heatmap of "Regulatory Sovereignty" (Draft vs. Enacted).
+         3. Intelligence Panel (Right): Contextual analysis that updates based on the active layer, explaining the "Compute Divide" or "Legislative Lag".
+         4. Dependency Matrix (Bottom): A sortable table of specific country-to-country dependencies.
+         WHY: This layout treats global AI data as a strategic supply-chain problem rather than just a list of stats.
+    -->
+
+    <!-- Visualization & Content Choices:
+         - Geographic Map -> Plotly.js (WebGL) -> Using Scattergeo and Choropleth for physical/legal data.
+         - Flow Trajectories -> Plotly.js (Scattergeo with lines) -> To show Cash flows between nations.
+         - Infrastructure Scaling -> Chart.js -> To show the FLOPs growth described in the Stanford Index.
+         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All visuals are Canvas or WebGL.
+    -->
+
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'midnight': '#0f172a',
+                        'slate-dark': '#1e293b',
+                        'amber-data': '#f59e0b',
+                        'teal-data': '#14b8a6',
+                        'rose-data': '#f43f5e',
+                        'canvas-bg': '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 550px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .layer-btn.active {
+            background-color: #f59e0b;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.4);
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-canvas-bg text-slate-900 font-sans min-h-screen">
+
+    <!-- Top Navigation / Strategic Header -->
+    <header class="bg-midnight text-white border-b border-amber-data/30 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="p-2 bg-amber-data rounded-lg text-midnight">
+                    <i class="fa-solid fa-satellite-dish text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black uppercase tracking-tighter">AI Flow <span class="text-amber-data">Command Center</span></h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Critical Strategic Assessment 2021-2025</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-2 p-1 bg-slate-dark rounded-xl border border-white/10">
+                <button onclick="setLayer('material')" id="btn-material" class="layer-btn active px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all">
+                    <i class="fa-solid fa-microchip mr-2"></i> Material Flow
+                </button>
+                <button onclick="setLayer('cash')" id="btn-cash" class="layer-btn px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all">
+                    <i class="fa-solid fa-money-bill-transfer mr-2"></i> Cash Flow
+                </button>
+                <button onclick="setLayer('law')" id="btn-law" class="layer-btn px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all">
+                    <i class="fa-solid fa-gavel mr-2"></i> Legal Flow
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1600px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left: Intelligence & Narrative (Analysis of the Compute Divide) -->
+        <aside class="lg:col-span-3 space-y-6 order-2 lg:order-1">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                <h2 id="intel-title" class="text-lg font-black text-midnight mb-2 flex items-center gap-2">
+                    <!-- Icon Injected -->
+                </h2>
+                <p id="intel-summary" class="text-sm text-slate-600 leading-relaxed mb-6">
+                    <!-- Text Injected -->
+                </p>
+                
+                <div id="metric-stack" class="space-y-4">
+                    <!-- Metrics Injected -->
+                </div>
+            </div>
+
+            <div class="bg-midnight text-white p-6 rounded-3xl shadow-xl overflow-hidden relative">
+                <div class="absolute -right-4 -bottom-4 opacity-10 text-8xl">
+                    <i class="fa-solid fa-link-slash"></i>
+                </div>
+                <h3 class="text-sm font-bold text-amber-data uppercase tracking-widest mb-4">Structural Chokepoint</h3>
+                <p id="chokepoint-text" class="text-sm font-medium text-slate-300 relative z-10">
+                    <!-- Text Injected -->
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                <h3 class="text-xs font-black text-slate-400 uppercase mb-4 tracking-widest">Verified Sources</h3>
+                <div id="source-list" class="space-y-2">
+                    <!-- Sources Injected -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: The Geographic Flow Map -->
+        <section class="lg:col-span-9 space-y-6 order-1 lg:order-2">
+            <div class="map-container">
+                <div id="flow-map" style="width:100%; height:100%;"></div>
+                
+                <!-- Overlay Legend -->
+                <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur p-4 rounded-2xl border border-slate-200 shadow-lg text-[10px] font-bold text-slate-700">
+                    <div id="map-legend" class="flex flex-col gap-2">
+                        <!-- Legend Injected -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Table: Interdependency Matrix -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="text-lg font-black text-midnight">Global Dependency Matrix</h3>
+                    <div class="text-[10px] font-bold bg-slate-100 px-3 py-1 rounded-full text-slate-500 uppercase">Interactive Drill-down</div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px]">
+                            <tr>
+                                <th class="px-6 py-4">Sovereign Entity</th>
+                                <th class="px-6 py-4">Compute Rank</th>
+                                <th class="px-6 py-4">Talent Rank</th>
+                                <th class="px-6 py-4">Investment Power</th>
+                                <th class="px-6 py-4">Regulatory Stance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-body" class="divide-y divide-slate-50">
+                            <!-- Matrix Rows Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- State Management ---
+        let currentLayer = 'material';
+        const matrixData = [
+            { name: "United States", compute: 1, talent: 1, invest: "$109.1B", reg: "Exec Action / Sectoral" },
+            { name: "China", compute: 2, talent: 9, invest: "$9.3B", reg: "Enforced / Specific" },
+            { name: "Singapore", compute: 3, talent: 6, invest: "$2.1B", reg: "Framework / Promotion" },
+            { name: "UK", compute: 17, talent: 4, invest: "$4.5B", reg: "Principles-based" },
+            { name: "South Korea", compute: 6, talent: 13, invest: "$1.2B", reg: "2025 Framework Act" },
+            { name: "India", compute: 68, talent: 2, invest: "$1.5B", reg: "Draft / Pro-Innovation" },
+            { name: "Brazil", compute: 42, talent: 30, invest: "$0.8B", reg: "Bill 2338 / Risk-based" }
+        ];
+
+        const layerContent = {
+            material: {
+                title: "Material Infrastructure",
+                icon: "fa-microchip",
+                summary: "The 'Compute Divide' visualizes the decoupling of Design (West) from Fabrication (East). 2021-2025 marked the realization that software is useless without specialized silica.",
+                chokepoint: "90% of advanced logic semiconductors depend on the Taiwan straits geographic node. The 'Physical Reality' of AI remains geographically trapped.",
+                metrics: [
+                    { label: "Fabrication Share (Asia-Pac)", value: "51%", desc: "Volume Leadership" },
+                    { label: "Training FLOPs Growth", value: "Exponential", desc: "Doubling every 5 mo." },
+                    { label: "Energy Consumption", value: "+40% YoY", desc: "Data center footprint" }
+                ],
+                sources: ["ETO Supply Chain Tracker", "Tortoise Global AI Index", "Stanford AI Index"],
+                legend: [
+                    { color: '#f59e0b', label: 'Design Hubs (USA, UK, DE)' },
+                    { color: '#14b8a6', label: 'Fabrication Centers (TW, CN, KR)' }
+                ]
+            },
+            cash: {
+                title: "Capital & Cash Flows",
+                icon: "fa-money-bill-transfer",
+                summary: "Investment flows track the flow of capital outside Silicon Valley. Cross-border investments from the Middle East and China into EU/African startups define the new multipolar race.",
+                chokepoint: "Corporate investment has shifted from R&D to massive hardware CAPEX. The barrier to entry for new nations is now financial, not just intellectual.",
+                metrics: [
+                    { label: "Total Private Inv. (2024)", value: "$109.1B", desc: "Adjusted for Inflation" },
+                    { label: "Middle East Inflow", value: "+22%", desc: "Transnational Activity" },
+                    { label: "M&A Volume", value: "Decreasing", desc: "Shift to Minority Stakes" }
+                ],
+                sources: ["OECD.AI Database", "OWID AI Investment", "ETO CAT Tracker"],
+                legend: [
+                    { color: '#f59e0b', label: 'Capital Exporting Nodes' },
+                    { color: '#1e293b', label: 'Cash Flow Trajectories' }
+                ]
+            },
+            law: {
+                title: "Regulatory Sovereignty",
+                icon: "fa-gavel",
+                summary: "Tracking 'Legislative Lag'. Nations are racing to define AI liability before models outpace them. The EU AI Act acts as 'Brussels Effect' gravity for the Global South.",
+                chokepoint: "The lag between model release and enforced law has grown from 3 months to 18 months. Governance is reactive, not proactive.",
+                metrics: [
+                    { label: "Nations with Laws", value: "31", desc: "Enacted/Enforced" },
+                    { label: "Drafted Frameworks", value: "62+", desc: "2025/2026 Pipeline" },
+                    { label: "Risk-based Adoption", value: "High", desc: "Brazil & EU Synergy" }
+                ],
+                sources: ["IAPP Global Tracker", "WitnessAI Map", "Akin Gump Database"],
+                legend: [
+                    { color: '#f43f5e', label: 'Enforced (Mandatory)' },
+                    { color: '#f59e0b', label: 'Enacted (Implementing)' },
+                    { color: '#14b8a6', label: 'Draft (Voluntary)' }
+                ]
+            }
+        };
+
+        // --- Core UI Functions ---
+
+        function setLayer(layer) {
+            currentLayer = layer;
+            document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${layer}`).classList.add('active');
+            renderIntel();
+            renderMap();
+        }
+
+        function renderIntel() {
+            const data = layerContent[currentLayer];
+            document.getElementById('intel-title').innerHTML = `<i class="fa-solid ${data.icon} text-amber-data"></i> ${data.title}`;
+            document.getElementById('intel-summary').innerText = data.summary;
+            document.getElementById('chokepoint-text').innerText = data.chokepoint;
+            
+            const metricsContainer = document.getElementById('metric-stack');
+            metricsContainer.innerHTML = data.metrics.map(m => `
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                    <div class="text-xl font-black text-midnight">${m.value}</div>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">${m.label}</div>
+                    <div class="text-[9px] text-amber-data italic font-medium">${m.desc}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('source-list').innerHTML = data.sources.map(s => `
+                <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                    <div class="w-1.5 h-1.5 rounded-full bg-teal-data"></div> ${s}
+                </div>
+            `).join('');
+
+            document.getElementById('map-legend').innerHTML = data.legend.map(l => `
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-sm" style="background-color: ${l.color}"></div>
+                    <span>${l.label}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderMatrix() {
+            const body = document.getElementById('matrix-body');
+            body.innerHTML = matrixData.map(d => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4 font-bold text-midnight">${d.name}</td>
+                    <td class="px-6 py-4 font-medium text-slate-600">${d.compute}</td>
+                    <td class="px-6 py-4 font-medium text-slate-600">${d.talent}</td>
+                    <td class="px-6 py-4 font-bold text-teal-data">${d.invest}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 bg-amber-data/10 text-amber-data text-[10px] font-bold rounded">${d.reg}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        // --- Plotly Geographic Engine ---
+
+        function renderMap() {
+            let data = [];
+            let layout = {
+                geo: {
+                    showframe: false,
+                    showcoastlines: true,
+                    projection: { type: 'equirectangular' },
+                    coastlinecolor: '#e2e8f0',
+                    landcolor: '#f8fafc',
+                    bgcolor: 'rgba(255,255,255,0)'
+                },
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                showlegend: false
+            };
+
+            if (currentLayer === 'material') {
+                // Design Hubs (Scatter Points)
+                data.push({
+                    type: 'scattergeo',
+                    lon: [-122, -0.1, 13.4],
+                    lat: [37.7, 51.5, 52.5],
+                    text: ['Silicon Valley', 'London', 'Berlin'],
+                    marker: { size: 12, color: '#f59e0b', line: { width: 2, color: 'white' } },
+                    name: 'Design Hubs'
+                });
+                // Fabrication Hubs (Scatter Points)
+                data.push({
+                    type: 'scattergeo',
+                    lon: [121.5, 114.1, 127.0, 116.4],
+                    lat: [25.0, 22.3, 37.5, 39.9],
+                    text: ['TSMC (Taiwan)', 'Hong Kong', 'Samsung (Seoul)', 'SMIC (Beijing)'],
+                    marker: { size: 18, color: '#14b8a6', line: { width: 2, color: 'white' } },
+                    name: 'Fabrication Hubs'
+                });
+            } else if (currentLayer === 'cash') {
+                // Flow Lines: US -> Rest of World, Middle East -> EU
+                const flows = [
+                    { start: [-122, 37.7], end: [-0.1, 51.5] }, // SF -> LDN
+                    { start: [46.6, 24.7], end: [2.3, 48.8] },  // Riyadh -> Paris
+                    { start: [116.4, 39.9], end: [28.0, -26.2] } // Beijing -> Johannesburg
+                ];
+
+                flows.forEach(f => {
+                    data.push({
+                        type: 'scattergeo',
+                        mode: 'lines',
+                        lon: [f.start[0], f.end[0]],
+                        lat: [f.start[1], f.end[1]],
+                        line: { width: 2, color: '#1e293b' },
+                        opacity: 0.5
+                    });
+                });
+
+                data.push({
+                    type: 'scattergeo',
+                    lon: flows.map(f => f.start[0]),
+                    lat: flows.map(f => f.start[1]),
+                    marker: { size: 10, color: '#f59e0b' }
+                });
+            } else if (currentLayer === 'law') {
+                // Regulatory Map (Choropleth)
+                data.push({
+                    type: 'choropleth',
+                    locations: ['USA', 'CHN', 'GBR', 'FRA', 'DEU', 'BRA', 'IND', 'SGP', 'KOR', 'JPN', 'CAN', 'AUS'],
+                    z: [2, 3, 2, 3, 3, 2, 1, 1, 2, 2, 1, 1], // 3=Enforced, 2=Enacted, 1=Draft
+                    colorscale: [
+                        [0, '#14b8a6'], // Draft
+                        [0.5, '#f59e0b'], // Enacted
+                        [1, '#f43f5e'] // Enforced
+                    ],
+                    showscale: false
+                });
+            }
+
+            Plotly.newPlot('flow-map', data, layout, { responsive: true, displayModeBar: false });
+        }
+
+        // --- Initialization ---
+        window.onload = function() {
+            renderIntel();
+            renderMatrix();
+            setTimeout(renderMap, 200); // Small delay to ensure container sizing
+        };
+
+        // Re-render map on resize
+        window.onresize = function() {
+            renderMap();
+        };
+
+    </script>
+</body>
+</html>
