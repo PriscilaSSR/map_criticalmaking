@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global AI Master Web: Talent & Labor</title>
+    <title>Global AI Master Web: Infrastructure & Cables</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,10 +19,11 @@
                         'flow-red': '#f87171',    // Law & Pressure
                         'flow-cyan': '#22d3ee',   // Material (Chips)
                         'flow-purple': '#c084fc', // Innovation
-                        'flow-green': '#10b981',  // Extraction (Eco)
+                        'flow-green': '#10b981',  // Extraction (Eco & Mining)
                         'flow-orange': '#f97316', // Geopolitics (Military/State)
                         'flow-pink': '#ec4899',   // Training Data & Reinforcement
                         'flow-indigo': '#818cf8', // Global Talent & Brain Drain
+                        'flow-sky': '#38bdf8',    // Infrastructure (Cables/Data Centers)
                         'flow-border': 'rgba(255,255,255,0.1)'
                     }
                 }
@@ -48,6 +49,7 @@
         .mode-btn.active-orange { border-left-color: #f97316; background: linear-gradient(90deg, rgba(249, 115, 22, 0.1), transparent); }
         .mode-btn.active-pink { border-left-color: #ec4899; background: linear-gradient(90deg, rgba(236, 72, 153, 0.1), transparent); }
         .mode-btn.active-indigo { border-left-color: #818cf8; background: linear-gradient(90deg, rgba(129, 140, 248, 0.1), transparent); }
+        .mode-btn.active-sky { border-left-color: #38bdf8; background: linear-gradient(90deg, rgba(56, 189, 248, 0.1), transparent); }
         .mode-btn.active-all { border-left-color: #ffffff; background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent); border-right: 1px solid rgba(255,255,255,0.1); }
         
         .flow-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-left-width: 2px; }
@@ -72,21 +74,21 @@
     <div class="absolute top-0 left-0 w-full z-10 p-6 pointer-events-none flex justify-between items-start">
         <div class="pointer-events-auto">
             <h1 class="text-2xl font-black uppercase tracking-widest text-white flex items-center gap-3">
-                <i class="fa-solid fa-people-arrows text-indigo-500"></i>
+                <i class="fa-solid fa-server text-sky-500"></i>
                 Global AI <span class="text-slate-500">Master Web</span>
             </h1>
-            <p class="text-xs font-mono text-indigo-400 mt-1">Talent, Labor, & Data (v6.0)</p>
+            <p class="text-xs font-mono text-sky-400 mt-1">Infrastructure, Mining, & Cables (v7.0)</p>
         </div>
         
         <div class="glass-panel rounded-lg p-3 pointer-events-auto">
             <div class="text-[10px] font-bold uppercase text-slate-500 mb-2">Active Flow Layers</div>
             <div class="flex gap-4">
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-indigo"><div class="w-2 h-2 rounded-full bg-flow-indigo"></div> Brain Drain</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-pink"><div class="w-2 h-2 rounded-full bg-flow-pink"></div> RLHF/Data</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-orange"><div class="w-2 h-2 rounded-full bg-flow-orange"></div> Geopolitics</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-sky"><div class="w-2 h-2 rounded-full bg-flow-sky"></div> Infra/Cables</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-green"><div class="w-2 h-2 rounded-full bg-flow-green"></div> Mining/Eco</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-indigo"><div class="w-2 h-2 rounded-full bg-flow-indigo"></div> Talent</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-pink"><div class="w-2 h-2 rounded-full bg-flow-pink"></div> Data</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-orange"><div class="w-2 h-2 rounded-full bg-flow-orange"></div> Defense</div>
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-gold"><div class="w-2 h-2 rounded-full bg-flow-gold"></div> Capital</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Supply</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-purple"><div class="w-2 h-2 rounded-full bg-flow-purple"></div> Code</div>
             </div>
         </div>
     </div>
@@ -103,10 +105,27 @@
                 <span class="font-bold text-white text-sm group-hover:text-white transition-colors">Global Synthesis</span>
                 <i class="fa-solid fa-globe text-white/50"></i>
             </div>
-            <p class="text-[10px] text-slate-300 leading-tight">Visualize 60+ flows including Talent Migration.</p>
+            <p class="text-[10px] text-slate-300 leading-tight">Visualize 70+ flows including Undersea Cables.</p>
         </button>
 
-        <!-- NEW: TALENT BUTTON -->
+        <!-- NEW: INFRASTRUCTURE BUTTON -->
+        <button onclick="updateMap('infrastructure')" id="btn-infrastructure" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-sky text-sm group-hover:text-white transition-colors">Cables & Data Centers</span>
+                <i class="fa-solid fa-network-wired text-flow-sky/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Subsea Cables (Meta/Google), Ashburn, & Guizhou.</p>
+        </button>
+
+        <!-- EXPANDED: EXTRACTION BUTTON -->
+        <button onclick="updateMap('extraction')" id="btn-extraction" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-green text-sm group-hover:text-white transition-colors">Mining & Deep Extraction</span>
+                <i class="fa-solid fa-gem text-flow-green/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Rare Earths (China), Lithium, Cobalt, & E-Waste.</p>
+        </button>
+
         <button onclick="updateMap('talent')" id="btn-talent" class="mode-btn w-full text-left p-4 group">
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold text-flow-indigo text-sm group-hover:text-white transition-colors">Global Talent & Brain Drain</span>
@@ -147,14 +166,6 @@
             <p class="text-[10px] text-slate-400 leading-tight">ASML, TSMC, Malaysia, Quartz, & Chemicals.</p>
         </button>
 
-        <button onclick="updateMap('extraction')" id="btn-extraction" class="mode-btn w-full text-left p-4 group">
-            <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-flow-green text-sm group-hover:text-white transition-colors">Deep Extraction</span>
-                <i class="fa-solid fa-gem text-flow-green/50"></i>
-            </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Cobalt, Copper, Water, & E-Waste.</p>
-        </button>
-
         <button onclick="updateMap('open_source')" id="btn-open_source" class="mode-btn w-full text-left p-4 group">
             <div class="flex justify-between items-center mb-1">
                 <span class="font-bold text-flow-purple text-sm group-hover:text-white transition-colors">Innovation Layer</span>
@@ -163,16 +174,8 @@
             <p class="text-[10px] text-slate-400 leading-tight">Hugging Face, Llama, Falcon, & DeepSeek.</p>
         </button>
 
-        <button onclick="updateMap('law')" id="btn-law" class="mode-btn w-full text-left p-4 group">
-            <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-flow-red text-sm group-hover:text-white transition-colors">Law & Pressure</span>
-                <i class="fa-solid fa-gavel text-flow-red/50"></i>
-            </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Brussels Effect, FTC Antitrust, & NYT Lawsuits.</p>
-        </button>
-
         <div class="p-3 bg-black/40 text-[9px] text-slate-600 font-mono border-t border-flow-border text-center mt-auto">
-            DATA: ETO, OECD, IAPP, DOD, FTC, CSET
+            DATA: ETO, OECD, TELEGEOGRAPHY, USGS
         </div>
     </div>
 
@@ -191,20 +194,51 @@
     <script>
         // --- MASTER DATA STORE ---
         const mapData = {
-            // 8. TALENT & BRAIN DRAIN (New Layer)
+            // 9. INFRASTRUCTURE (New Layer)
+            infrastructure: {
+                color: '#38bdf8',
+                label: 'Cables & Data Centers',
+                flows: [
+                    { id: 'infra-marea', from: {name: "Virginia Beach (USA)", lat: 36.8, lon: -75.9}, to: {name: "Bilbao (Spain)", lat: 43.2, lon: -2.9}, desc: "MAREA Cable", val: "Microsoft/Meta", details: "Owned by Microsoft & Meta. 160 Tbps capacity. Tech giants now own the physical pipes of the internet, bypassing telecom carriers." },
+                    { id: 'infra-2africa', from: {name: "UK/Europe", lat: 50.0, lon: -5.0}, to: {name: "Africa (Coastal)", lat: -34.0, lon: 18.0}, desc: "2Africa Cable", val: "Meta Owned", details: "The longest subsea cable ever built (45,000km), circling Africa. Meta is effectively building the internet infrastructure for the entire African continent." },
+                    { id: 'infra-equiano', from: {name: "Portugal", lat: 38.7, lon: -9.1}, to: {name: "South Africa", lat: -33.9, lon: 18.4}, desc: "Equiano Cable", val: "Google Owned", details: "Google's private cable connecting Europe to Africa. Big Tech's ownership of subsea cables has risen from <10% to >66% in a decade." },
+                    { id: 'infra-peace', from: {name: "Pakistan (Gwadar)", lat: 25.1, lon: 62.3}, to: {name: "Marseille (France)", lat: 43.3, lon: 5.3}, desc: "PEACE Cable", val: "China Owned", details: "Pakistan East Africa Connecting Europe. A digital component of China's Belt and Road Initiative, reducing latency between China and EU." },
+                    { id: 'infra-ashburn', from: {name: "Ashburn (USA)", lat: 39.0, lon: -77.4}, to: {name: "Global Traffic", lat: 39.0, lon: -40.0}, desc: "Data Center Alley", val: "70% Traffic", details: "Loudoun County, VA processes ~70% of the world's internet traffic. The physical heart of the cloud, dense with AWS/Azure/Google facilities." },
+                    { id: 'infra-dublin', from: {name: "Dublin (Ireland)", lat: 53.3, lon: -6.2}, to: {name: "EU User Data", lat: 50.0, lon: 10.0}, desc: "EU Hyperscale Hub", val: "Energy Drain", details: "The HQ for US Tech in Europe. Data centers now consume a massive percentage of Ireland's total electricity grid, causing energy/climate friction." },
+                    { id: 'infra-guizhou', from: {name: "Guizhou (China)", lat: 26.6, lon: 106.6}, to: {name: "China Traffic", lat: 35.0, lon: 105.0}, desc: "Sovereign Cloud", val: "State Control", details: "China's mountainous hub for 'Sovereign Cloud'. Apple and Tencent store Chinese user data here to comply with local data residency laws." }
+                ],
+                intel: [{ title: "The Physical Cloud", text: "The 'Cloud' is not in the sky; it is underwater and in nondescript warehouses. Big Tech now owns the cables, not just the servers." }]
+            },
+            // 3. EXTRACTION (Expanded with Mining)
+            extraction: {
+                color: '#10b981',
+                label: 'Mining & Deep Extraction',
+                flows: [
+                    { id: 'ext-bayan', from: {name: "Bayan Obo (China)", lat: 41.7, lon: 109.9}, to: {name: "Global Magnets", lat: 35.0, lon: 135.0}, desc: "Rare Earths", val: "Largest Mine", details: "The world's largest Rare Earth mine. Produces the Neodymium used in permanent magnets for EV motors and wind turbines, critical for AI energy transition." },
+                    { id: 'ext-thacker', from: {name: "Thacker Pass (Nevada)", lat: 41.7, lon: -118.0}, to: {name: "US Battery Fabs", lat: 39.0, lon: -119.0}, desc: "Lithium Clay", val: "Contested", details: "The largest known Lithium source in the US. Critical for US battery independence but faces fierce opposition from indigenous groups and environmentalists." },
+                    { id: 'ext-uyuni', from: {name: "Salar de Uyuni (Bolivia)", lat: -20.1, lon: -67.4}, to: {name: "Chinese Refineries", lat: 30.0, lon: 120.0}, desc: "Lithium Triangle", val: "Raw Brine", details: "Bolivia holds massive lithium resources but lacks processing capability. Raw brine flows to China for refining into battery-grade material." },
+                    { id: 'ext-cobalt', from: {name: "DRC (Katanga)", lat: -10.4, lon: 25.2}, to: {name: "Battery Fabs", lat: 30.0, lon: 120.0}, desc: "Cobalt Supply", val: "70% Global", details: "Essential for Data Center UPS batteries. 70% mined in Congo, often under brutal conditions." },
+                    { id: 'ext-copper', from: {name: "Chile (Escondida)", lat: -24.2, lon: -69.0}, to: {name: "Global Grid", lat: 20.0, lon: 0.0}, desc: "Copper", val: "Grid Upgrade", details: "AI Racks consume 3-4x power, requiring massive copper cabling upgrades from South America." },
+                    { id: 'ext-gallium', from: {name: "China (Interior)", lat: 35.0, lon: 105.0}, to: {name: "Global Fabs", lat: 23.0, lon: 120.2}, desc: "Gallium", val: "98% Control", details: "Chokepoint Mineral. China controls 98% of Gallium used in radio/optics chips." },
+                    { id: 'ext-water-us', from: {name: "Aquifer (VA)", lat: 38.0, lon: -78.0}, to: {name: "Data Center Alley", lat: 39.0, lon: -77.4}, desc: "Water Draw", val: "Cooling", details: "Data Center Alley in Virginia draws millions of gallons daily from local watersheds." },
+                    { id: 'ext-waste', from: {name: "Global North", lat: 40.0, lon: -40.0}, to: {name: "Ghana", lat: 5.5, lon: -0.2}, desc: "E-Waste Flow", val: "Toxic", details: "Obsolete GPUs end up in Agbogbloshie, Ghana, releasing toxic fumes during scrap recovery." }
+                ],
+                intel: [{ title: "The Periodic Table of AI", text: "AI runs on Neodymium, Lithium, and Cobalt. The control of these mines is the control of the AI hardware future." }]
+            },
+            // 8. TALENT & BRAIN DRAIN
             talent: {
                 color: '#818cf8',
                 label: 'Global Talent & Brain Drain',
                 flows: [
-                    { id: 'tal-india', from: {name: "IITs (India)", lat: 22.5, lon: 77.0}, to: {name: "Silicon Valley", lat: 37.4, lon: -122.1}, desc: "The CEO Pipeline", val: "High Migration", details: "Top graduates from Indian Institutes of Technology (IITs) form a massive portion of the US tech workforce, including CEOs of Microsoft and Google. A significant 'brain drain' for India." },
-                    { id: 'tal-china', from: {name: "Tsinghua Univ (Beijing)", lat: 39.9, lon: 116.3}, to: {name: "US Research Labs", lat: 37.7, lon: -122.4}, desc: "Research Talent", val: "Top 1% Researchers", details: "Despite geopolitical tensions, a large percentage of top-tier AI papers in the US are co-authored by Chinese nationals. The US relies heavily on Chinese talent for PhD-level research." },
-                    { id: 'tal-canada', from: {name: "Canada (Toronto/Mtl)", lat: 43.7, lon: -79.4}, to: {name: "US Tech Giants", lat: 37.4, lon: -122.0}, desc: "The Godfather Legacy", val: "Acquisition", details: "Pioneers like Hinton and Bengio built AI foundations in Canada, but huge numbers of their students and startups were acquired by US giants (Google Brain, DeepMind)." },
+                    { id: 'tal-india', from: {name: "IITs (India)", lat: 22.5, lon: 77.0}, to: {name: "Silicon Valley", lat: 37.4, lon: -122.1}, desc: "The CEO Pipeline", val: "High Migration", details: "Top graduates from Indian Institutes of Technology (IITs) form a massive portion of the US tech workforce, including CEOs of Microsoft and Google." },
+                    { id: 'tal-china', from: {name: "Tsinghua Univ (Beijing)", lat: 39.9, lon: 116.3}, to: {name: "US Research Labs", lat: 37.7, lon: -122.4}, desc: "Research Talent", val: "Top 1% Researchers", details: "Despite tensions, a large percentage of top-tier AI papers in the US are co-authored by Chinese nationals. The US relies heavily on Chinese talent." },
+                    { id: 'tal-canada', from: {name: "Canada (Toronto/Mtl)", lat: 43.7, lon: -79.4}, to: {name: "US Tech Giants", lat: 37.4, lon: -122.0}, desc: "The Godfather Legacy", val: "Acquisition", details: "Pioneers like Hinton and Bengio built AI foundations in Canada, but massive numbers of their students were acquired by US giants." },
                     { id: 'tal-europe', from: {name: "Eastern Europe", lat: 52.0, lon: 21.0}, to: {name: "Western Hubs", lat: 51.5, lon: -0.1}, desc: "Developer Flow", val: "Remote/Relo", details: "Significant migration of software engineering talent from Poland, Romania, and Ukraine to UK/US tech hubs, driven by wage disparities." },
-                    { id: 'tal-tsmc', from: {name: "Taiwan (Engineers)", lat: 23.0, lon: 121.0}, to: {name: "Arizona (TSMC Fab)", lat: 33.4, lon: -112.0}, desc: "Process Engineers", val: "Knowledge Transfer", details: "TSMC is sending hundreds of Taiwanese engineers to Arizona to staff the new Fab 21, creating cultural and operational friction in an attempt to transplant manufacturing culture." }
+                    { id: 'tal-tsmc', from: {name: "Taiwan (Engineers)", lat: 23.0, lon: 121.0}, to: {name: "Arizona (TSMC Fab)", lat: 33.4, lon: -112.0}, desc: "Process Engineers", val: "Knowledge Transfer", details: "TSMC is sending hundreds of Taiwanese engineers to Arizona to staff the new Fab 21, creating operational friction in transplanting culture." }
                 ],
-                intel: [{ title: "The Human Element", text: "Hardware stays in the East, but Human Capital flows West. The US maintains dominance not just by training its own, but by absorbing the top 1% of global talent." }]
+                intel: [{ title: "The Human Element", text: "Hardware stays in the East, but Human Capital flows West. The US maintains dominance by absorbing the top 1% of global talent." }]
             },
-            // 7. TRAINING DATA & REINFORCEMENT (Renamed)
+            // 7. TRAINING DATA & REINFORCEMENT
             training_data: {
                 color: '#ec4899',
                 label: 'Training Data & Reinforcement',
@@ -261,20 +295,6 @@
                 ],
                 intel: [{ title: "The Quartz Bottleneck", text: "The supply chain is hyper-efficient but brittle. A single disruption in NC or Taiwan halts global progress." }]
             },
-            // 3. EXTRACTION LAYER
-            extraction: {
-                color: '#10b981',
-                label: 'Deep Extraction',
-                flows: [
-                    { id: 'ext-cobalt', from: {name: "DRC (Katanga)", lat: -10.4, lon: 25.2}, to: {name: "Battery Fabs", lat: 30.0, lon: 120.0}, desc: "Cobalt Supply", val: "70% Global", details: "Essential for Data Center UPS batteries. 70% mined in Congo, often under brutal conditions." },
-                    { id: 'ext-copper', from: {name: "Chile (Escondida)", lat: -24.2, lon: -69.0}, to: {name: "Global Grid", lat: 20.0, lon: 0.0}, desc: "Copper", val: "Grid Upgrade", details: "AI Racks consume 3-4x power, requiring massive copper cabling upgrades from South America." },
-                    { id: 'ext-gallium', from: {name: "China (Interior)", lat: 35.0, lon: 105.0}, to: {name: "Global Fabs", lat: 23.0, lon: 120.2}, desc: "Gallium", val: "98% Control", details: "Chokepoint Mineral. China controls 98% of Gallium used in radio/optics chips." },
-                    { id: 'ext-water-us', from: {name: "Aquifer (VA)", lat: 38.0, lon: -78.0}, to: {name: "Data Center Alley", lat: 39.0, lon: -77.4}, desc: "Water Draw", val: "Cooling", details: "Data Center Alley in Virginia draws millions of gallons daily from local watersheds." },
-                    { id: 'ext-water-az', from: {name: "Colorado River", lat: 36.0, lon: -114.7}, to: {name: "Arizona Fabs", lat: 33.4, lon: -112.0}, desc: "Fab Water", val: "Scarcity", details: "Fabs in the Arizona desert require ultra-pure water, competing with agriculture." },
-                    { id: 'ext-waste', from: {name: "Global North", lat: 40.0, lon: -40.0}, to: {name: "Ghana", lat: 5.5, lon: -0.2}, desc: "E-Waste Flow", val: "Toxic", details: "Obsolete GPUs end up in Agbogbloshie, Ghana, releasing toxic fumes during scrap recovery." }
-                ],
-                intel: [{ title: "Ecological Debt", text: "AI runs on Congolese Cobalt, Chilean Copper, and depletes ancient aquifers." }]
-            },
             // 4. INNOVATION LAYER
             open_source: {
                 color: '#c084fc',
@@ -325,7 +345,7 @@
             currentMode = mode;
             
             // UI Styling
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple', 'active-green', 'active-orange', 'active-pink', 'active-indigo', 'active-all'));
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple', 'active-green', 'active-orange', 'active-pink', 'active-indigo', 'active-sky', 'active-all'));
             
             let badgeText = "";
             let badgeColor = "";
@@ -335,7 +355,7 @@
                 badgeText = "Global Synthesis";
                 badgeColor = "#ffffff";
             } else {
-                const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : mode === 'extraction' ? 'active-green' : mode === 'geopolitics' ? 'active-orange' : mode === 'training_data' ? 'active-pink' : mode === 'talent' ? 'active-indigo' : 'active-purple';
+                const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : mode === 'extraction' ? 'active-green' : mode === 'geopolitics' ? 'active-orange' : mode === 'training_data' ? 'active-pink' : mode === 'talent' ? 'active-indigo' : mode === 'infrastructure' ? 'active-sky' : 'active-purple';
                 document.getElementById(`btn-${mode}`).classList.add(activeClass);
                 badgeText = mapData[mode].label;
                 badgeColor = mapData[mode].color;
@@ -351,7 +371,7 @@
             let traces = [];
             let sidebarHTML = `<div class="animate-fade-in">`;
             
-            const layersToRender = mode === 'all' ? ['geopolitics', 'capital', 'talent', 'training_data', 'material', 'extraction', 'open_source', 'law'] : [mode];
+            const layersToRender = mode === 'all' ? ['infrastructure', 'geopolitics', 'capital', 'talent', 'training_data', 'material', 'extraction', 'open_source', 'law'] : [mode];
             
             layersToRender.forEach(layerKey => {
                 const data = mapData[layerKey];
