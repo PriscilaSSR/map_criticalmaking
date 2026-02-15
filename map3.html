@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global AI Strategic Web: Open Source & Capital Flows</title>
+    <title>Global AI Strategic Web: Interactive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Palette: Stratosphere Dark with Neon Accents -->
     <script>
         tailwind.config = {
             theme: {
@@ -16,10 +15,10 @@
                     colors: {
                         'space-bg': '#020408',
                         'space-panel': 'rgba(15, 23, 42, 0.95)',
-                        'flow-gold': '#fbbf24',   // Capital
-                        'flow-red': '#f87171',    // Law
-                        'flow-cyan': '#22d3ee',   // Material
-                        'flow-purple': '#c084fc', // Open Source
+                        'flow-gold': '#fbbf24',
+                        'flow-red': '#f87171',
+                        'flow-cyan': '#22d3ee',
+                        'flow-purple': '#c084fc',
                         'flow-border': 'rgba(255,255,255,0.1)'
                     }
                 }
@@ -35,16 +34,23 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
-        .mode-btn {
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
+        .mode-btn { transition: all 0.3s ease; border-left: 3px solid transparent; }
         .mode-btn:hover { background: rgba(255,255,255,0.05); }
         .mode-btn.active-gold { border-left-color: #fbbf24; background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), transparent); }
         .mode-btn.active-red { border-left-color: #f87171; background: linear-gradient(90deg, rgba(248, 113, 113, 0.1), transparent); }
         .mode-btn.active-cyan { border-left-color: #22d3ee; background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), transparent); }
         .mode-btn.active-purple { border-left-color: #c084fc; background: linear-gradient(90deg, rgba(192, 132, 252, 0.1), transparent); }
         
+        /* Flow Card Interactive Styles */
+        .flow-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-left-width: 2px; }
+        .flow-card:hover { transform: translateX(4px); background: rgba(255,255,255,0.05); }
+        .flow-card.active-card { 
+            background: rgba(255,255,255,0.1); 
+            transform: scale(1.02); 
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border-left-width: 4px;
+        }
+
         .intel-scroll::-webkit-scrollbar { width: 4px; }
         .intel-scroll::-webkit-scrollbar-track { background: transparent; }
         .intel-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 2px; }
@@ -52,7 +58,6 @@
 </head>
 <body class="h-screen w-screen relative">
 
-    <!-- Full Screen Map Container -->
     <div id="cross-border-map" class="absolute inset-0 z-0"></div>
 
     <!-- Header Overlay -->
@@ -65,7 +70,6 @@
             <p class="text-xs font-mono text-indigo-400 mt-1">Interdependency Tracker (2021-2025)</p>
         </div>
         
-        <!-- Legend/Key -->
         <div class="glass-panel rounded-lg p-3 pointer-events-auto">
             <div class="text-[10px] font-bold uppercase text-slate-500 mb-2">Active Flow Layers</div>
             <div class="flex gap-4">
@@ -77,7 +81,7 @@
         </div>
     </div>
 
-    <!-- Left Control Panel (Layer Selection) -->
+    <!-- Left Control Panel -->
     <div class="absolute left-6 top-32 z-10 w-72 glass-panel bg-space-panel rounded-xl overflow-hidden flex flex-col pointer-events-auto">
         <div class="p-4 border-b border-flow-border bg-black/20">
             <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Strategic Lens</h2>
@@ -120,55 +124,59 @@
         </div>
     </div>
 
-    <!-- Right Intel Panel (Contextual Details) -->
+    <!-- Right Intel Panel -->
     <div class="absolute right-6 top-32 bottom-12 z-10 w-96 glass-panel bg-space-panel rounded-xl flex flex-col pointer-events-auto">
         <div class="p-5 border-b border-flow-border flex justify-between items-center bg-black/20">
             <h2 class="text-xs font-black text-white uppercase tracking-wider">Strategic Analysis</h2>
             <div id="layer-badge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-flow-purple/10 text-flow-purple border border-flow-purple/20">Innovation</div>
         </div>
 
-        <!-- Scrollable Content Area -->
         <div id="intel-content" class="flex-grow p-6 overflow-y-auto intel-scroll space-y-6">
             <!-- Content Injected via JS -->
         </div>
     </div>
 
-    <!-- JavaScript Logic -->
     <script>
+        // --- Data Store ---
         const mapData = {
             open_source: {
                 color: '#c084fc',
                 label: 'Open Source',
                 flows: [
                     { 
+                        id: 'os-1',
                         from: {name: "Hugging Face (Paris/NYC)", lat: 48.8, lon: 2.3}, 
                         to: {name: "Global Devs", lat: 20.0, lon: 0.0}, 
                         desc: "The Central Hub",
                         val: "1M+ Models",
-                        details: "Hugging Face acts as the 'Switzerland' of AI, hosting weights from Meta, Mistral, and Google. It is the primary artery for global open-source proliferation, defying export controls."
+                        details: "Hugging Face acts as the 'Switzerland' of AI, hosting weights from Meta, Mistral, and Google. It is the primary artery for global open-source proliferation."
                     },
                     { 
+                        id: 'os-2',
                         from: {name: "Meta (USA)", lat: 37.4, lon: -122.1}, 
                         to: {name: "China (Alibaba/01.AI)", lat: 30.2, lon: 120.1}, 
                         desc: "Llama Weight Leakage",
                         val: "Foundation",
-                        details: "Despite US export controls on chips, Meta's Llama model weights are open. Chinese firms (01.AI, Alibaba) use Llama architecture as the foundation for their own 'sovereign' models."
+                        details: "Despite export controls, Meta's Llama weights are open. Chinese firms use Llama architecture as the foundation for their own 'sovereign' models."
                     },
                     { 
+                        id: 'os-3',
                         from: {name: "Mistral (France)", lat: 48.8, lon: 2.3}, 
                         to: {name: "USA (Microsoft)", lat: 47.6, lon: -122.3}, 
                         desc: "Mixtral Partnership",
                         val: "Strategic",
-                        details: "France's champion Mistral provides open-weights but partnered with Microsoft for distribution, illustrating the tension between open ideals and hyperscaler infrastructure."
+                        details: "France's champion Mistral provides open-weights but partnered with Microsoft for distribution, illustrating the tension between open ideals and hyperscalers."
                     },
                     { 
+                        id: 'os-4',
                         from: {name: "DeepSeek (China)", lat: 30.2, lon: 120.1}, 
                         to: {name: "Western Academia", lat: 42.3, lon: -71.0}, 
                         desc: "Architecture Innovation",
                         val: "MoE Efficiency",
-                        details: "China's DeepSeek-V2 has innovated in 'Mixture of Experts' efficiency, influencing Western academic research and proving that innovation flows West-to-East AND East-to-West."
+                        details: "China's DeepSeek-V2 has innovated in 'Mixture of Experts' efficiency, influencing Western academic research."
                     },
                      { 
+                        id: 'os-5',
                         from: {name: "Stability AI (UK)", lat: 51.5, lon: -0.1}, 
                         to: {name: "Global Creative", lat: 35.6, lon: 139.6}, 
                         desc: "Stable Diffusion",
@@ -177,14 +185,8 @@
                     }
                 ],
                 intel: [
-                    {
-                        title: "The Uncontrollable Leak",
-                        text: "While governments choke hardware supply chains (chips), the software layer (weights) is fluid. Once a model like Llama 3 or Mistral Large is released, it is instantly mirrored globally, bypassing US/China firewalls."
-                    },
-                    {
-                        title: "Hubs vs. Hyperscalers",
-                        text: "A new power struggle exists between the 'Open Hubs' (Hugging Face, GitHub) and 'Walled Gardens' (OpenAI, Google). Open Source is the primary mechanism for the Global South to close the AI gap without buying expensive APIs."
-                    }
+                    { title: "The Uncontrollable Leak", text: "While hardware is choked, model weights are fluid. Once released, they bypass all firewalls." },
+                    { title: "Hubs vs. Hyperscalers", text: "Open Hubs (Hugging Face) enable the Global South to close the AI gap without buying expensive APIs." }
                 ]
             },
             capital: {
@@ -192,39 +194,40 @@
                 label: 'Capital Flows',
                 flows: [
                     { 
+                        id: 'cap-1',
                         from: {name: "SoftBank (Japan)", lat: 35.6, lon: 139.6}, 
                         to: {name: "Arm (UK)", lat: 52.2, lon: 0.1}, 
                         desc: "Strategic Ownership",
                         val: "90% Stake",
-                        details: "Japanese capital controls the architectural standard (Arm) for nearly all mobile and IoT chips globally, illustrating Asian capital's grip on Western IP."
+                        details: "Japanese capital controls the architectural standard (Arm) for nearly all mobile/IoT chips globally."
                     },
                     { 
+                        id: 'cap-2',
                         from: {name: "G42 (UAE)", lat: 24.4, lon: 54.3}, 
                         to: {name: "Cerebras (USA)", lat: 37.3, lon: -122.0}, 
                         desc: "Sovereign Compute Deal",
                         val: "$900M+",
-                        details: "The UAE is trading capital for hardware access. By investing in Cerebras, G42 secures a non-Nvidia supply chain for its 'Jais' Arabic LLM."
+                        details: "UAE trades capital for hardware access, securing non-Nvidia supply chains for its 'Jais' Arabic LLM."
                     },
                     { 
+                        id: 'cap-3',
                         from: {name: "Andreessen Horowitz (USA)", lat: 37.4, lon: -122.1}, 
                         to: {name: "Mistral (France)", lat: 48.8, lon: 2.3}, 
                         desc: "Series A Lead",
                         val: "€385M Round",
-                        details: "US Venture Capital is aggressively entering the European market to ensure they own a stake in the 'European OpenAI' alternative."
+                        details: "US Venture Capital is aggressively entering Europe to own a stake in the 'European OpenAI' alternative."
                     },
                     { 
+                        id: 'cap-4',
                         from: {name: "Canada (Pension Funds)", lat: 43.6, lon: -79.3}, 
                         to: {name: "Cohere (Canada)", lat: 43.6, lon: -79.3}, 
                         desc: "Domestic Defense",
                         val: "$500M",
-                        details: "Canadian capital is rallying around Cohere to prevent it from being absorbed by US tech giants, creating a rare 'stay-at-home' unicorn."
+                        details: "Canadian capital rallies around Cohere to prevent absorption by US giants."
                     }
                 ],
                 intel: [
-                    {
-                        title: "The Sovereign Pivot",
-                        text: "2024-2025 has seen the rise of 'Nation-State VC'. Countries like UAE, Saudi Arabia, and France are using sovereign funds to buy their way into the AI table, fearing that relying on US private VC leaves them vulnerable."
-                    }
+                    { title: "The Sovereign Pivot", text: "Countries like UAE and Saudi Arabia are using sovereign funds to buy their way into the AI table." }
                 ]
             },
             material: {
@@ -232,39 +235,40 @@
                 label: 'Material Chain',
                 flows: [
                     { 
+                        id: 'mat-1',
                         from: {name: "ASML (Netherlands)", lat: 51.4, lon: 5.4}, 
                         to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, 
                         desc: "EUV Lithography",
                         val: "Monopoly",
-                        details: "The single most critical flow in AI. Without ASML's EUV machines moving to Taiwan, no sub-5nm chips (Nvidia H100s) can be manufactured."
+                        details: "The most critical flow. Without ASML's EUV machines, no sub-5nm chips (H100s) can be made."
                     },
                     { 
+                        id: 'mat-2',
                         from: {name: "Malaysia (Penang)", lat: 5.4, lon: 100.3}, 
                         to: {name: "Global Market", lat: 20.0, lon: 0.0}, 
                         desc: "Packaging & Testing",
                         val: "Backend Hub",
-                        details: "Malaysia has become the global chokepoint for 'Packaging'—the final step of chip making. Intel and Infineon rely heavily on Penang facilities."
+                        details: "Malaysia is the global chokepoint for 'Packaging'—the final step of chip making for Intel/Infineon."
                     },
                     { 
+                        id: 'mat-3',
                         from: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, 
                         to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, 
                         desc: "Fabless Dependency",
                         val: "IP Transfer",
-                        details: "Nvidia sends blueprints, not chips. This total reliance on Taiwanese foundries is the primary geopolitical risk factor for the US AI sector."
+                        details: "Nvidia sends blueprints, not chips. Reliance on Taiwanese foundries is the primary geopolitical risk."
                     },
                     { 
+                        id: 'mat-4',
                         from: {name: "South Korea (Samsung/SK)", lat: 37.5, lon: 127.0}, 
                         to: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, 
                         desc: "HBM Memory Flow",
                         val: "Critical",
-                        details: "AI chips require High Bandwidth Memory (HBM). South Korea (SK Hynix) holds a near-monopoly on this specific component needed for H100s."
+                        details: "AI chips require High Bandwidth Memory (HBM). South Korea holds a near-monopoly on this component."
                     }
                 ],
                 intel: [
-                    {
-                        title: "The Fragile Chain",
-                        text: "The AI supply chain is not resilient; it is hyper-efficient. A disruption in Dutch lithography, Taiwanese fabrication, or Malaysian packaging halts global AI progress immediately."
-                    }
+                    { title: "The Fragile Chain", text: "The supply chain is hyper-efficient but brittle. A single disruption halts global progress." }
                 ]
             },
             law: {
@@ -272,32 +276,32 @@
                 label: 'Regulatory Reach',
                 flows: [
                     { 
+                        id: 'law-1',
                         from: {name: "EU (Brussels)", lat: 50.8, lon: 4.3}, 
                         to: {name: "GitHub/Hugging Face", lat: 37.7, lon: -122.4}, 
                         desc: "GPAI Transparency",
                         val: "AI Act",
-                        details: "The EU AI Act mandates detailed technical documentation for 'General Purpose AI'. This forces US open-source platforms to effectively police compliance or risk EU fines."
+                        details: "EU AI Act mandates documentation for 'General Purpose AI', forcing US platforms to police compliance."
                     },
                     { 
+                        id: 'law-2',
                         from: {name: "China (Beijing)", lat: 39.9, lon: 116.4}, 
                         to: {name: "Domestic Devs", lat: 35.0, lon: 105.0}, 
                         desc: "Generative Measures",
                         val: "Censorship",
-                        details: "China's 'Interim Measures' effectively ban anonymous open-source contribution for generative models, forcing developers to register algorithms with the CAC."
+                        details: "China's 'Interim Measures' ban anonymous contribution, forcing developers to register algorithms."
                     },
                     { 
+                        id: 'law-3',
                         from: {name: "California (Sacramento)", lat: 38.5, lon: -121.4}, 
                         to: {name: "US Tech Sector", lat: 37.7, lon: -122.4}, 
-                        desc: "SB 1047 (Vetoed/Influence)",
+                        desc: "SB 1047 Influence",
                         val: "Safety",
-                        details: "While vetoed in 2024, the push for California's safety bill signaled to the world that the US 'home base' is considering liability for open-model release."
+                        details: "California's push for safety bills signals potential future liability for open-model releases."
                     }
                 ],
                 intel: [
-                    {
-                        title: "Regulatory Fragmentation",
-                        text: "We are seeing a 'Splinternet' of AI Law. The EU focuses on Rights, China on Social Stability, and the US on National Security. Open Source developers are caught in the crossfire."
-                    }
+                    { title: "Regulatory Fragmentation", text: "A 'Splinternet' of AI Law: EU (Rights), China (Stability), US (Security)." }
                 ]
             }
         };
@@ -306,18 +310,26 @@
 
         function initMap() {
             updateMap(currentMode);
+            
+            // Add click listener to the map div
+            document.getElementById('cross-border-map').on('plotly_click', function(data){
+                const pt = data.points[0];
+                if(pt && pt.data.customdata) {
+                    const flowId = pt.data.customdata;
+                    focusSidebarCard(flowId);
+                }
+            });
         }
 
         function updateMap(mode) {
             currentMode = mode;
             const data = mapData[mode];
             
-            // UI Updates
+            // 1. UI Updates
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple'));
             const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : 'active-purple';
             document.getElementById(`btn-${mode}`).classList.add(activeClass);
 
-            // Badge Update
             const badge = document.getElementById('layer-badge');
             badge.innerText = data.label;
             badge.style.color = data.color;
@@ -326,10 +338,10 @@
 
             renderIntel(data);
 
-            // PLOTLY MAP CONFIG
+            // 2. Plotly Construction
             const traces = [];
 
-            // 1. Flow Lines (Curved visual via Plotly)
+            // A. Flow Lines
             data.flows.forEach(flow => {
                 traces.push({
                     type: 'scattergeo',
@@ -337,65 +349,53 @@
                     lat: [flow.from.lat, flow.to.lat],
                     lon: [flow.from.lon, flow.to.lon],
                     mode: 'lines',
-                    line: { width: 1.5, color: data.color },
-                    opacity: 0.5,
-                    hoverinfo: 'none'
+                    line: { width: 2, color: data.color },
+                    opacity: 0.6,
+                    hoverinfo: 'text',
+                    text: flow.desc,
+                    customdata: [flow.id, flow.id] // Pass ID to click handler
                 });
 
-                // End Marker (Arrow-ish)
+                // End Marker (Arrow head)
                 traces.push({
                     type: 'scattergeo',
                     lat: [flow.to.lat],
                     lon: [flow.to.lon],
                     mode: 'markers',
                     marker: { size: 6, color: data.color, symbol: 'triangle-up' },
-                    hoverinfo: 'text',
-                    text: `${flow.desc} -> ${flow.to.name}`
+                    hoverinfo: 'none',
+                    customdata: [flow.id]
                 });
             });
 
-            // 2. Nodes
-            const uniqueNodes = new Map();
+            // B. Nodes (Bubbles)
             data.flows.forEach(f => {
-                uniqueNodes.set(f.from.name, f.from);
-                uniqueNodes.set(f.to.name, f.to);
-            });
-
-            const nodeLat = [], nodeLon = [], nodeText = [];
-            uniqueNodes.forEach(n => {
-                nodeLat.push(n.lat);
-                nodeLon.push(n.lon);
-                nodeText.push(n.name);
-            });
-
-            traces.push({
-                type: 'scattergeo',
-                lat: nodeLat,
-                lon: nodeLon,
-                mode: 'markers+text',
-                text: nodeText,
-                textposition: 'top center',
-                marker: {
-                    size: 8,
-                    color: '#ffffff',
-                    line: {color: data.color, width: 2}
-                },
-                textfont: { color: '#cbd5e1', size: 9, family: 'Inter' },
-                hoverinfo: 'text'
+                // From Node
+                traces.push({
+                    type: 'scattergeo',
+                    lat: [f.from.lat],
+                    lon: [f.from.lon],
+                    mode: 'markers+text',
+                    text: [f.from.name],
+                    textposition: 'top center',
+                    marker: { size: 8, color: '#ffffff', line: {color: data.color, width: 2} },
+                    textfont: { color: '#cbd5e1', size: 9, family: 'Inter' },
+                    hoverinfo: 'text',
+                    customdata: [f.id] // Link node to its primary flow
+                });
             });
 
             const layout = {
                 geo: {
                     scope: 'world',
-                    projection: { type: 'orthographic' },
+                    projection: { type: 'orthographic', rotation: {lon: 10, lat: 20} },
                     showland: true,
-                    landcolor: '#0f172a', // Map land color
-                    countrycolor: '#334155', // Borders
+                    landcolor: '#0f172a',
+                    countrycolor: '#334155',
                     showocean: true,
                     oceancolor: '#020408',
                     showlakes: false,
                     bgcolor: 'rgba(0,0,0,0)',
-                    rotation: {lon: 0, lat: 20}
                 },
                 margin: { l: 0, r: 0, t: 0, b: 0 },
                 paper_bgcolor: 'rgba(0,0,0,0)',
@@ -404,23 +404,12 @@
                 dragmode: 'pan'
             };
 
-            Plotly.newPlot('cross-border-map', traces, layout, { responsive: true, displayModeBar: false });
+            Plotly.react('cross-border-map', traces, layout, { responsive: true, displayModeBar: false });
         }
 
         function renderIntel(data) {
             const container = document.getElementById('intel-content');
             
-            const flowsHtml = data.flows.map(f => `
-                <div class="bg-black/40 rounded-lg p-3 border-l-2 hover:bg-white/5 transition-colors cursor-default" style="border-color: ${data.color}">
-                    <div class="flex justify-between items-start mb-1">
-                        <span class="text-xs font-bold text-white">${f.from.name} <i class="fa-solid fa-arrow-right text-[9px] mx-1 text-slate-500"></i> ${f.to.name}</span>
-                        <span class="text-[9px] font-mono text-slate-300 bg-white/10 px-1 rounded">${f.val}</span>
-                    </div>
-                    <div class="text-[10px] text-slate-200 font-bold mb-1" style="color:${data.color}">${f.desc}</div>
-                    <p class="text-[10px] text-slate-400 leading-relaxed">${f.details}</p>
-                </div>
-            `).join('');
-
             const intelHtml = data.intel.map(i => `
                 <div class="mb-5">
                     <h3 class="text-xs font-black text-white uppercase mb-2 border-b border-white/10 pb-1">${i.title}</h3>
@@ -428,16 +417,80 @@
                 </div>
             `).join('');
 
+            const flowsHtml = data.flows.map(f => `
+                <div id="card-${f.id}" onclick="flyToFlow('${f.id}', ${f.from.lat}, ${f.from.lon}, ${f.to.lat}, ${f.to.lon})" 
+                     class="flow-card bg-black/40 rounded-lg p-3 border-l-2 hover:bg-white/5 cursor-pointer relative overflow-hidden group" 
+                     style="border-color: ${data.color}">
+                    
+                    <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i class="fa-solid fa-crosshairs text-slate-500 text-xs"></i>
+                    </div>
+
+                    <div class="flex justify-between items-start mb-1 pr-4">
+                        <span class="text-xs font-bold text-white">${f.from.name}</span>
+                        <span class="text-[9px] font-mono text-slate-300 bg-white/10 px-1 rounded">${f.val}</span>
+                    </div>
+                    <div class="text-[9px] text-slate-500 mb-1 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-down"></i> ${f.to.name}
+                    </div>
+                    <div class="text-[10px] text-slate-200 font-bold mb-1" style="color:${data.color}">${f.desc}</div>
+                    <p class="text-[10px] text-slate-400 leading-relaxed">${f.details}</p>
+                </div>
+            `).join('');
+
             container.innerHTML = `
                 <div class="animate-fade-in">
                     ${intelHtml}
                     <div class="h-px w-full bg-white/10 my-4"></div>
-                    <h3 class="text-[9px] font-bold text-slate-500 uppercase mb-3 tracking-widest">Active Connections</h3>
+                    <h3 class="text-[9px] font-bold text-slate-500 uppercase mb-3 tracking-widest flex items-center gap-2">
+                        Active Connections <span class="bg-slate-800 text-slate-400 px-1.5 rounded-full text-[8px]">${data.flows.length}</span>
+                    </h3>
                     <div class="space-y-3">
                         ${flowsHtml}
                     </div>
                 </div>
             `;
+        }
+
+        // --- Interaction Logic ---
+
+        // 1. Sidebar Click -> Map Rotate
+        function flyToFlow(id, lat1, lon1, lat2, lon2) {
+            // Highlight Card
+            document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('active-card'));
+            const card = document.getElementById(`card-${id}`);
+            if(card) card.classList.add('active-card');
+
+            // Calculate Center Point for View
+            const centerLon = (lon1 + lon2) / 2;
+            const centerLat = (lat1 + lat2) / 2;
+
+            // Animate Globe
+            Plotly.animate('cross-border-map', {
+                layout: {
+                    geo: {
+                        projection: {
+                            rotation: { lon: centerLon, lat: centerLat }
+                        }
+                    }
+                }
+            }, {
+                transition: { duration: 1500, easing: 'cubic-in-out' },
+                frame: { duration: 1500 }
+            });
+        }
+
+        // 2. Map Click -> Sidebar Scroll
+        function focusSidebarCard(flowId) {
+            const card = document.getElementById(`card-${flowId}`);
+            if(card) {
+                // Highlight
+                document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('active-card'));
+                card.classList.add('active-card');
+                
+                // Scroll
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         window.onload = initMap;
