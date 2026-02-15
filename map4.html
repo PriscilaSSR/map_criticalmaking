@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global AI Master Web: Complete Synthesis</title>
+    <title>Global AI Master Web: Defense & Geopolitics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,11 +15,12 @@
                     colors: {
                         'space-bg': '#020408',
                         'space-panel': 'rgba(15, 23, 42, 0.95)',
-                        'flow-gold': '#fbbf24',   // Capital
-                        'flow-red': '#f87171',    // Law
+                        'flow-gold': '#fbbf24',   // Capital & Alliances
+                        'flow-red': '#f87171',    // Law & Pressure
                         'flow-cyan': '#22d3ee',   // Material (Chips)
                         'flow-purple': '#c084fc', // Innovation
                         'flow-green': '#10b981',  // Extraction (Eco)
+                        'flow-orange': '#f97316', // Geopolitics (Military/State)
                         'flow-border': 'rgba(255,255,255,0.1)'
                     }
                 }
@@ -42,6 +43,7 @@
         .mode-btn.active-cyan { border-left-color: #22d3ee; background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), transparent); }
         .mode-btn.active-purple { border-left-color: #c084fc; background: linear-gradient(90deg, rgba(192, 132, 252, 0.1), transparent); }
         .mode-btn.active-green { border-left-color: #10b981; background: linear-gradient(90deg, rgba(16, 185, 129, 0.1), transparent); }
+        .mode-btn.active-orange { border-left-color: #f97316; background: linear-gradient(90deg, rgba(249, 115, 22, 0.1), transparent); }
         .mode-btn.active-all { border-left-color: #ffffff; background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent); border-right: 1px solid rgba(255,255,255,0.1); }
         
         .flow-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-left-width: 2px; }
@@ -66,20 +68,21 @@
     <div class="absolute top-0 left-0 w-full z-10 p-6 pointer-events-none flex justify-between items-start">
         <div class="pointer-events-auto">
             <h1 class="text-2xl font-black uppercase tracking-widest text-white flex items-center gap-3">
-                <i class="fa-solid fa-network-wired text-indigo-500"></i>
+                <i class="fa-solid fa-shield-halved text-orange-500"></i>
                 Global AI <span class="text-slate-500">Master Web</span>
             </h1>
-            <p class="text-xs font-mono text-indigo-400 mt-1">Complete Interdependency Database (2021-2025)</p>
+            <p class="text-xs font-mono text-orange-400 mt-1">Defense, Subsidies & Alliances (v4.0)</p>
         </div>
         
         <div class="glass-panel rounded-lg p-3 pointer-events-auto">
             <div class="text-[10px] font-bold uppercase text-slate-500 mb-2">Active Flow Layers</div>
             <div class="flex gap-4">
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-gold"><div class="w-2 h-2 rounded-full bg-flow-gold"></div> Capital</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-red"><div class="w-2 h-2 rounded-full bg-flow-red"></div> Law</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Supply Chain</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-green"><div class="w-2 h-2 rounded-full bg-flow-green"></div> Extraction</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-purple"><div class="w-2 h-2 rounded-full bg-flow-purple"></div> Innovation</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-orange"><div class="w-2 h-2 rounded-full bg-flow-orange"></div> Geopolitics</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-gold"><div class="w-2 h-2 rounded-full bg-flow-gold"></div> Alliances</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-red"><div class="w-2 h-2 rounded-full bg-flow-red"></div> Pressure</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Supply</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-green"><div class="w-2 h-2 rounded-full bg-flow-green"></div> Eco</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-purple"><div class="w-2 h-2 rounded-full bg-flow-purple"></div> Code</div>
             </div>
         </div>
     </div>
@@ -96,15 +99,23 @@
                 <span class="font-bold text-white text-sm group-hover:text-white transition-colors">Global Synthesis</span>
                 <i class="fa-solid fa-globe text-white/50"></i>
             </div>
-            <p class="text-[10px] text-slate-300 leading-tight">View all 30+ flows simultaneously.</p>
+            <p class="text-[10px] text-slate-300 leading-tight">Visualize 40+ flows including Military & Subsidies.</p>
         </button>
         
+        <button onclick="updateMap('geopolitics')" id="btn-geopolitics" class="mode-btn w-full text-left p-4 group">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-bold text-flow-orange text-sm group-hover:text-white transition-colors">Geopolitics & Defense</span>
+                <i class="fa-solid fa-jet-fighter text-flow-orange/50"></i>
+            </div>
+            <p class="text-[10px] text-slate-400 leading-tight">Project Replicator, CHIPS Act, IDF AI, & PLA Fusion.</p>
+        </button>
+
         <button onclick="updateMap('capital')" id="btn-capital" class="mode-btn w-full text-left p-4 group">
             <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-flow-gold text-sm group-hover:text-white transition-colors">Capital Flows</span>
-                <i class="fa-solid fa-coins text-flow-gold/50"></i>
+                <span class="font-bold text-flow-gold text-sm group-hover:text-white transition-colors">Capital & Alliances</span>
+                <i class="fa-solid fa-handshake text-flow-gold/50"></i>
             </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Microsoft, G42, SoftBank & Digital Silk Road.</p>
+            <p class="text-[10px] text-slate-400 leading-tight">Apple/OpenAI, Nvidia/Foxconn, MSFT/G42.</p>
         </button>
 
         <button onclick="updateMap('material')" id="btn-material" class="mode-btn w-full text-left p-4 group">
@@ -133,14 +144,14 @@
 
         <button onclick="updateMap('law')" id="btn-law" class="mode-btn w-full text-left p-4 group">
             <div class="flex justify-between items-center mb-1">
-                <span class="font-bold text-flow-red text-sm group-hover:text-white transition-colors">Regulatory Reach</span>
+                <span class="font-bold text-flow-red text-sm group-hover:text-white transition-colors">Law & Pressure</span>
                 <i class="fa-solid fa-gavel text-flow-red/50"></i>
             </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Brussels Effect, China CAC, & Brazil Bill 2338.</p>
+            <p class="text-[10px] text-slate-400 leading-tight">Brussels Effect, FTC Antitrust, & NYT Lawsuits.</p>
         </button>
 
         <div class="p-3 bg-black/40 text-[9px] text-slate-600 font-mono border-t border-flow-border text-center mt-auto">
-            DATA: ETO, OECD, IAPP, USGS
+            DATA: ETO, OECD, IAPP, DOD, FTC
         </div>
     </div>
 
@@ -159,19 +170,34 @@
     <script>
         // --- MASTER DATA STORE ---
         const mapData = {
-            // 1. CAPITAL LAYER (Investments)
+            // 6. GEOPOLITICS (New Layer: Military, Subsidies)
+            geopolitics: {
+                color: '#f97316',
+                label: 'Geopolitics & Defense',
+                flows: [
+                    { id: 'geo-replicator', from: {name: "Pentagon (USA)", lat: 38.8, lon: -77.0}, to: {name: "Silicon Valley", lat: 37.4, lon: -122.1}, desc: "Project Replicator", val: "Drone Swarms", details: "US DoD initiative to field thousands of autonomous systems within 24 months to counter China's mass, bridging the gap between Tech and Defense." },
+                    { id: 'geo-chips', from: {name: "US Govt (DC)", lat: 38.9, lon: -77.0}, to: {name: "Intel (Ohio)", lat: 40.0, lon: -82.9}, desc: "CHIPS Act", val: "$8.5 Billion", details: "Direct state subsidy to re-shore semiconductor manufacturing. The largest industrial policy intervention in US history." },
+                    { id: 'geo-lavender', from: {name: "Unit 8200 (Tel Aviv)", lat: 32.1, lon: 34.8}, to: {name: "Conflict Zone", lat: 31.5, lon: 34.4}, desc: "The Gospel/Lavender", val: "AI Targeting", details: "Deployment of AI targeting systems in active combat, marking the first major war where algorithmic target generation outpaced human review." },
+                    { id: 'geo-titan', from: {name: "Palantir (Denver)", lat: 39.7, lon: -104.9}, to: {name: "US Army", lat: 35.1, lon: -79.0}, desc: "Project Titan", val: "Battlefield OS", details: "Contract to build next-gen ground station systems using AI to process aerial sensor data in real-time." },
+                    { id: 'geo-fusion', from: {name: "PLA (Beijing)", lat: 39.9, lon: 116.4}, to: {name: "Harbin Inst.", lat: 45.8, lon: 126.5}, desc: "Mil-Civil Fusion", val: "State Strategy", details: "China's explicit strategy to integrate private AI innovation (universities/companies) directly into military modernization (missile guidance)." },
+                    { id: 'geo-rapidus', from: {name: "Japan Govt", lat: 35.6, lon: 139.6}, to: {name: "Rapidus (Hokkaido)", lat: 43.0, lon: 141.3}, desc: "Sovereign Foundry", val: "$Billions", details: "Japan's state-backed bid to leapfrog straight to 2nm chip production, reviving its semiconductor glory days." }
+                ],
+                intel: [{ title: "The Militarization of Code", text: "AI is no longer just commercial. It is the central pillar of modern defense strategy, from drone swarms to algorithmic targeting." }]
+            },
+            // 1. CAPITAL LAYER (Investments + Alliances)
             capital: {
                 color: '#fbbf24',
-                label: 'Capital Flows',
+                label: 'Capital & Alliances',
                 flows: [
+                    { id: 'cap-apple', from: {name: "Apple (Cupertino)", lat: 37.3, lon: -122.0}, to: {name: "OpenAI (SF)", lat: 37.7, lon: -122.4}, desc: "Apple Intelligence", val: "Integration", details: "A landmark alliance embedding OpenAI's models into the iOS operating system, validating the model-as-utility thesis." },
+                    { id: 'cap-nv-fox', from: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, to: {name: "Foxconn (Taiwan)", lat: 25.0, lon: 121.5}, desc: "AI Factories", val: "Digital Twins", details: "Partnership to build 'AI Factories'—data centers dedicated to training autonomous vehicle fleets and robotic systems." },
                     { id: 'cap-msft', from: {name: "Microsoft (USA)", lat: 47.6, lon: -122.3}, to: {name: "OpenAI (SF)", lat: 37.7, lon: -122.4}, desc: "The Anchor Investment", val: "$13 Billion", details: "Microsoft provides the Azure compute credits that keep ChatGPT running. This is the bedrock investment of the generative AI era." },
                     { id: 'cap-g42', from: {name: "G42 (UAE)", lat: 24.4, lon: 54.3}, to: {name: "Cerebras (USA)", lat: 37.3, lon: -122.0}, desc: "Hardware Access", val: "$900M+", details: "UAE trades capital for non-Nvidia hardware access, securing supply chains for its 'Jais' Arabic LLM." },
                     { id: 'cap-amzn', from: {name: "Amazon (USA)", lat: 47.6, lon: -122.3}, to: {name: "Anthropic (SF)", lat: 37.7, lon: -122.4}, desc: "Claude Backing", val: "$4 Billion", details: "Amazon's answer to the MSFT/OpenAI alliance, securing Anthropic as a primary model on AWS Bedrock." },
                     { id: 'cap-soft', from: {name: "SoftBank (Japan)", lat: 35.6, lon: 139.6}, to: {name: "Arm (UK)", lat: 52.2, lon: 0.1}, desc: "Strategic Control", val: "90% Stake", details: "Japanese capital controls the architectural standard (Arm) for nearly all mobile/IoT chips globally." },
-                    { id: 'cap-silk', from: {name: "China (State)", lat: 39.9, lon: 116.4}, to: {name: "Africa (Infrastructure)", lat: 9.0, lon: 7.4}, desc: "Digital Silk Road", val: "Surveillance", details: "China exports 'Safe City' AI surveillance tech to nations like Nigeria in exchange for data access and influence." },
-                    { id: 'cap-nvda', from: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, to: {name: "CoreWeave (USA)", lat: 40.7, lon: -74.2}, desc: "GPU Financing", val: "Debt/Equity", details: "Nvidia invests in its own customers (CoreWeave Cloud) to ensure high demand for H100 chips." }
+                    { id: 'cap-silk', from: {name: "China (State)", lat: 39.9, lon: 116.4}, to: {name: "Africa (Infrastructure)", lat: 9.0, lon: 7.4}, desc: "Digital Silk Road", val: "Surveillance", details: "China exports 'Safe City' AI surveillance tech to nations like Nigeria in exchange for data access and influence." }
                 ],
-                intel: [{ title: "Nation-State VC", text: "Sovereign funds (UAE, Saudi, China) are now competing with Silicon Valley VC to secure compute power." }]
+                intel: [{ title: "The Era of Alliances", text: "Big Tech is solidifying power not just through acquisition, but through deep, integrated alliances (Apple+OpenAI) that lock in ecosystem dominance." }]
             },
             // 2. MATERIAL LAYER (Chips Supply Chain)
             material: {
@@ -215,18 +241,20 @@
                 ],
                 intel: [{ title: "The Weight Leak", text: "Software is fluid. Once weights are uploaded, they bypass physical export controls." }]
             },
-            // 5. LAW LAYER (Regulation) - RESTORED
+            // 5. LAW LAYER (Regulation + Pressure)
             law: {
                 color: '#f87171',
-                label: 'Regulatory Reach',
+                label: 'Law & Pressure',
                 flows: [
+                    { id: 'law-ftc', from: {name: "FTC (DC)", lat: 38.9, lon: -77.0}, to: {name: "Cloud Giants", lat: 37.7, lon: -122.4}, desc: "Antitrust Inquiry", val: "Investigation", details: "The FTC has launched a massive inquiry into the investments of Microsoft, Amazon, and Google into AI startups." },
+                    { id: 'law-nyt', from: {name: "NY Times (NYC)", lat: 40.7, lon: -74.0}, to: {name: "OpenAI (SF)", lat: 37.7, lon: -122.4}, desc: "Copyright Suit", val: "IP Rights", details: "A pivotal lawsuit challenging the fair use of copyrighted news data for training LLMs." },
                     { id: 'law-eu', from: {name: "EU (Brussels)", lat: 50.8, lon: 4.3}, to: {name: "US Tech", lat: 37.7, lon: -122.4}, desc: "Brussels Effect", val: "Compliance", details: "EU AI Act forces US companies to alter products globally for market access." },
                     { id: 'law-chn', from: {name: "China (CAC)", lat: 39.9, lon: 116.4}, to: {name: "Domestic AI", lat: 35.0, lon: 105.0}, desc: "CAC Registry", val: "Control", details: "China requires all generative AI to be registered and adhere to socialist values." },
                     { id: 'law-bra', from: {name: "Brazil (Brasilia)", lat: -15.8, lon: -47.9}, to: {name: "Global Internet", lat: 0.0, lon: -30.0}, desc: "Bill 2338", val: "Extraterritorial", details: "Brazil's draft law applies to anyone processing Brazilian data, regardless of location." },
                     { id: 'law-uk', from: {name: "UK Safety Inst.", lat: 51.5, lon: -0.1}, to: {name: "Foundation Labs", lat: 37.7, lon: -122.4}, desc: "Safety Testing", val: "Voluntary", details: "UK AISI secured agreements to pre-test models from OpenAI/Google." },
                     { id: 'law-un', from: {name: "UN (Advisory)", lat: 40.7, lon: -74.0}, to: {name: "Global Policy", lat: 46.2, lon: 6.1}, desc: "Global Body", val: "Framework", details: "UN's push for an 'IPCC for AI' to create global scientific consensus." }
                 ],
-                intel: [{ title: "Splinternet", text: "Three regulatory blocs: EU (Rights), China (Control), US (Innovation)." }]
+                intel: [{ title: "Regulatory Squeeze", text: "Big Tech is facing a pincer movement: Copyright lawsuits from content owners and Antitrust inquiries from governments." }]
             }
         };
 
@@ -249,7 +277,7 @@
             currentMode = mode;
             
             // UI Styling
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple', 'active-green', 'active-all'));
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple', 'active-green', 'active-orange', 'active-all'));
             
             let badgeText = "";
             let badgeColor = "";
@@ -259,7 +287,7 @@
                 badgeText = "Global Synthesis";
                 badgeColor = "#ffffff";
             } else {
-                const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : mode === 'extraction' ? 'active-green' : 'active-purple';
+                const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : mode === 'extraction' ? 'active-green' : mode === 'geopolitics' ? 'active-orange' : 'active-purple';
                 document.getElementById(`btn-${mode}`).classList.add(activeClass);
                 badgeText = mapData[mode].label;
                 badgeColor = mapData[mode].color;
@@ -275,7 +303,7 @@
             let traces = [];
             let sidebarHTML = `<div class="animate-fade-in">`;
             
-            const layersToRender = mode === 'all' ? ['capital', 'material', 'extraction', 'open_source', 'law'] : [mode];
+            const layersToRender = mode === 'all' ? ['geopolitics', 'capital', 'material', 'extraction', 'open_source', 'law'] : [mode];
             
             layersToRender.forEach(layerKey => {
                 const data = mapData[layerKey];
