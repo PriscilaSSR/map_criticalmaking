@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global AI Strategic Web: Interactive</title>
+    <title>Global AI Strategic Web: Expanded</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -41,7 +41,6 @@
         .mode-btn.active-cyan { border-left-color: #22d3ee; background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), transparent); }
         .mode-btn.active-purple { border-left-color: #c084fc; background: linear-gradient(90deg, rgba(192, 132, 252, 0.1), transparent); }
         
-        /* Flow Card Interactive Styles */
         .flow-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-left-width: 2px; }
         .flow-card:hover { transform: translateX(4px); background: rgba(255,255,255,0.05); }
         .flow-card.active-card { 
@@ -67,7 +66,7 @@
                 <i class="fa-solid fa-circle-nodes text-indigo-500"></i>
                 Global AI <span class="text-slate-500">Strategic Web</span>
             </h1>
-            <p class="text-xs font-mono text-indigo-400 mt-1">Interdependency Tracker (2021-2025)</p>
+            <p class="text-xs font-mono text-indigo-400 mt-1">Expanded Interdependency Tracker (2021-2025)</p>
         </div>
         
         <div class="glass-panel rounded-lg p-3 pointer-events-auto">
@@ -75,7 +74,7 @@
             <div class="flex gap-4">
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-gold"><div class="w-2 h-2 rounded-full bg-flow-gold"></div> Capital</div>
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-red"><div class="w-2 h-2 rounded-full bg-flow-red"></div> Law</div>
-                <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Chips</div>
+                <div class="flex items-center gap-2 text-xs font-bold text-flow-cyan"><div class="w-2 h-2 rounded-full bg-flow-cyan"></div> Supply Chain</div>
                 <div class="flex items-center gap-2 text-xs font-bold text-flow-purple"><div class="w-2 h-2 rounded-full bg-flow-purple"></div> Open Source</div>
             </div>
         </div>
@@ -92,7 +91,7 @@
                 <span class="font-bold text-flow-purple text-sm group-hover:text-white transition-colors">Open Source & Innovation</span>
                 <i class="fa-solid fa-code-branch text-flow-purple/50"></i>
             </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Weight leakage, Hugging Face, & DeepSeek.</p>
+            <p class="text-[10px] text-slate-400 leading-tight">Falcon, Llama, Mistral, & DeepSeek.</p>
         </button>
 
         <button onclick="updateMap('capital')" id="btn-capital" class="mode-btn w-full text-left p-4 group">
@@ -100,7 +99,7 @@
                 <span class="font-bold text-flow-gold text-sm group-hover:text-white transition-colors">Capital Flows</span>
                 <i class="fa-solid fa-coins text-flow-gold/50"></i>
             </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Sovereign Wealth, SoftBank, & G42.</p>
+            <p class="text-[10px] text-slate-400 leading-tight">Microsoft, SoftBank, G42, & Digital Silk Road.</p>
         </button>
 
         <button onclick="updateMap('material')" id="btn-material" class="mode-btn w-full text-left p-4 group">
@@ -108,7 +107,7 @@
                 <span class="font-bold text-flow-cyan text-sm group-hover:text-white transition-colors">Material Supply Chain</span>
                 <i class="fa-solid fa-microchip text-flow-cyan/50"></i>
             </div>
-            <p class="text-[10px] text-slate-400 leading-tight">ASML, TSMC, Malaysia Packaging, & Energy.</p>
+            <p class="text-[10px] text-slate-400 leading-tight">Lithium, ASML, TSMC, & Foxconn Assembly.</p>
         </button>
 
         <button onclick="updateMap('law')" id="btn-law" class="mode-btn w-full text-left p-4 group">
@@ -116,7 +115,7 @@
                 <span class="font-bold text-flow-red text-sm group-hover:text-white transition-colors">Regulatory Reach</span>
                 <i class="fa-solid fa-scale-balanced text-flow-red/50"></i>
             </div>
-            <p class="text-[10px] text-slate-400 leading-tight">Brussels Effect, China Labeling, & Brazil.</p>
+            <p class="text-[10px] text-slate-400 leading-tight">Brussels Effect, Safety Institutes, & UN.</p>
         </button>
 
         <div class="p-3 bg-black/40 text-[9px] text-slate-600 font-mono border-t border-flow-border text-center">
@@ -137,56 +136,51 @@
     </div>
 
     <script>
-        // --- Data Store ---
+        // --- Expanded Data Store ---
         const mapData = {
             open_source: {
                 color: '#c084fc',
-                label: 'Open Source',
+                label: 'Innovation Layer',
                 flows: [
                     { 
-                        id: 'os-1',
-                        from: {name: "Hugging Face (Paris/NYC)", lat: 48.8, lon: 2.3}, 
+                        id: 'os-1', from: {name: "Hugging Face (Paris)", lat: 48.8, lon: 2.3}, 
                         to: {name: "Global Devs", lat: 20.0, lon: 0.0}, 
-                        desc: "The Central Hub",
-                        val: "1M+ Models",
-                        details: "Hugging Face acts as the 'Switzerland' of AI, hosting weights from Meta, Mistral, and Google. It is the primary artery for global open-source proliferation."
+                        desc: "The Central Hub", val: "1M+ Models",
+                        details: "The primary artery for model distribution, hosting weights from Meta, Google, and Mistral, effectively acting as the 'Switzerland' of AI."
                     },
                     { 
-                        id: 'os-2',
-                        from: {name: "Meta (USA)", lat: 37.4, lon: -122.1}, 
-                        to: {name: "China (Alibaba/01.AI)", lat: 30.2, lon: 120.1}, 
-                        desc: "Llama Weight Leakage",
-                        val: "Foundation",
-                        details: "Despite export controls, Meta's Llama weights are open. Chinese firms use Llama architecture as the foundation for their own 'sovereign' models."
+                        id: 'os-2', from: {name: "Meta (USA)", lat: 37.4, lon: -122.1}, 
+                        to: {name: "Alibaba (China)", lat: 30.2, lon: 120.1}, 
+                        desc: "Llama Proliferation", val: "Weight Leakage",
+                        details: "Meta's Llama architecture has become the de-facto standard for Chinese developers (like 01.AI) to build sovereign models despite chip bans."
                     },
                     { 
-                        id: 'os-3',
-                        from: {name: "Mistral (France)", lat: 48.8, lon: 2.3}, 
-                        to: {name: "USA (Microsoft)", lat: 47.6, lon: -122.3}, 
-                        desc: "Mixtral Partnership",
-                        val: "Strategic",
-                        details: "France's champion Mistral provides open-weights but partnered with Microsoft for distribution, illustrating the tension between open ideals and hyperscalers."
+                        id: 'os-3', from: {name: "TII (UAE)", lat: 24.4, lon: 54.3}, 
+                        to: {name: "Global Open Source", lat: 10.0, lon: 20.0}, 
+                        desc: "Falcon Series", val: "Sovereign OS",
+                        details: "The Technology Innovation Institute (TII) in Abu Dhabi released 'Falcon', a top-tier open model, asserting the Middle East as a code contributor, not just a capital source."
                     },
                     { 
-                        id: 'os-4',
-                        from: {name: "DeepSeek (China)", lat: 30.2, lon: 120.1}, 
-                        to: {name: "Western Academia", lat: 42.3, lon: -71.0}, 
-                        desc: "Architecture Innovation",
-                        val: "MoE Efficiency",
-                        details: "China's DeepSeek-V2 has innovated in 'Mixture of Experts' efficiency, influencing Western academic research."
+                        id: 'os-4', from: {name: "Mistral (France)", lat: 48.8, lon: 2.3}, 
+                        to: {name: "Microsoft (USA)", lat: 47.6, lon: -122.3}, 
+                        desc: "Mixtral Partnership", val: "Distribution",
+                        details: "A key tension: France's champion Mistral provides open-weights but relies on Microsoft Azure for mass distribution."
                     },
-                     { 
-                        id: 'os-5',
-                        from: {name: "Stability AI (UK)", lat: 51.5, lon: -0.1}, 
-                        to: {name: "Global Creative", lat: 35.6, lon: 139.6}, 
-                        desc: "Stable Diffusion",
-                        val: "Generative",
-                        details: "UK-based Stability AI democratized image generation globally, forcing closed competitors (Midjourney/DALL-E) to accelerate features."
+                    { 
+                        id: 'os-5', from: {name: "DeepSeek (China)", lat: 30.2, lon: 120.1}, 
+                        to: {name: "US Academia", lat: 42.3, lon: -71.0}, 
+                        desc: "MoE Innovation", val: "Architecture",
+                        details: "DeepSeek-V2's efficiency innovations are being studied by Western researchers, proving innovation flows both ways."
+                    },
+                    { 
+                        id: 'os-6', from: {name: "EleutherAI (Decentralized)", lat: 40.7, lon: -74.0}, 
+                        to: {name: "Research Labs", lat: 51.5, lon: -0.1}, 
+                        desc: "The Pile/Pythia", val: "Dataset Standard",
+                        details: "This decentralized collective created standard open datasets (The Pile) used to train models globally, bypassing corporate data silos."
                     }
                 ],
                 intel: [
-                    { title: "The Uncontrollable Leak", text: "While hardware is choked, model weights are fluid. Once released, they bypass all firewalls." },
-                    { title: "Hubs vs. Hyperscalers", text: "Open Hubs (Hugging Face) enable the Global South to close the AI gap without buying expensive APIs." }
+                    { title: "The Weight Leak", text: "Software is fluid. Once weights are uploaded to Hugging Face, they bypass physical export controls." }
                 ]
             },
             capital: {
@@ -194,81 +188,83 @@
                 label: 'Capital Flows',
                 flows: [
                     { 
-                        id: 'cap-1',
-                        from: {name: "SoftBank (Japan)", lat: 35.6, lon: 139.6}, 
+                        id: 'cap-1', from: {name: "Microsoft (USA)", lat: 47.6, lon: -122.3}, 
+                        to: {name: "OpenAI (SF)", lat: 37.7, lon: -122.4}, 
+                        desc: "The Anchor Investment", val: "$13 Billion",
+                        details: "The defining investment of the era. Microsoft provides the Azure compute credits that keep ChatGPT running."
+                    },
+                    { 
+                        id: 'cap-2', from: {name: "G42 (UAE)", lat: 24.4, lon: 54.3}, 
+                        to: {name: "Cerebras (USA)", lat: 37.3, lon: -122.0}, 
+                        desc: "Hardware Access", val: "$900M+",
+                        details: "UAE trades capital for non-Nvidia hardware access, securing supply chains for its 'Jais' Arabic LLM."
+                    },
+                    { 
+                        id: 'cap-3', from: {name: "Amazon (USA)", lat: 47.6, lon: -122.3}, 
+                        to: {name: "Anthropic (SF)", lat: 37.7, lon: -122.4}, 
+                        desc: "Claude Backing", val: "$4 Billion",
+                        details: "Amazon's answer to the MSFT/OpenAI alliance, securing Anthropic as a primary model on AWS Bedrock."
+                    },
+                    { 
+                        id: 'cap-4', from: {name: "SoftBank (Japan)", lat: 35.6, lon: 139.6}, 
                         to: {name: "Arm (UK)", lat: 52.2, lon: 0.1}, 
-                        desc: "Strategic Ownership",
-                        val: "90% Stake",
+                        desc: "Strategic Control", val: "90% Stake",
                         details: "Japanese capital controls the architectural standard (Arm) for nearly all mobile/IoT chips globally."
                     },
                     { 
-                        id: 'cap-2',
-                        from: {name: "G42 (UAE)", lat: 24.4, lon: 54.3}, 
-                        to: {name: "Cerebras (USA)", lat: 37.3, lon: -122.0}, 
-                        desc: "Sovereign Compute Deal",
-                        val: "$900M+",
-                        details: "UAE trades capital for hardware access, securing non-Nvidia supply chains for its 'Jais' Arabic LLM."
+                        id: 'cap-5', from: {name: "China (State)", lat: 39.9, lon: 116.4}, 
+                        to: {name: "Africa (Infrastructure)", lat: 9.0, lon: 7.4}, 
+                        desc: "Digital Silk Road", val: "Surveillance",
+                        details: "China exports 'Safe City' AI surveillance tech to nations like Nigeria and Ethiopia in exchange for data access and influence."
                     },
                     { 
-                        id: 'cap-3',
-                        from: {name: "Andreessen Horowitz (USA)", lat: 37.4, lon: -122.1}, 
-                        to: {name: "Mistral (France)", lat: 48.8, lon: 2.3}, 
-                        desc: "Series A Lead",
-                        val: "€385M Round",
-                        details: "US Venture Capital is aggressively entering Europe to own a stake in the 'European OpenAI' alternative."
-                    },
-                    { 
-                        id: 'cap-4',
-                        from: {name: "Canada (Pension Funds)", lat: 43.6, lon: -79.3}, 
-                        to: {name: "Cohere (Canada)", lat: 43.6, lon: -79.3}, 
-                        desc: "Domestic Defense",
-                        val: "$500M",
-                        details: "Canadian capital rallies around Cohere to prevent absorption by US giants."
+                        id: 'cap-6', from: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, 
+                        to: {name: "CoreWeave (USA)", lat: 40.7, lon: -74.2}, 
+                        desc: "GPU Financing", val: "Debt/Equity",
+                        details: "Nvidia invests in its own customers (CoreWeave Cloud) to ensure high demand for H100 chips, a circular revenue flow."
                     }
                 ],
                 intel: [
-                    { title: "The Sovereign Pivot", text: "Countries like UAE and Saudi Arabia are using sovereign funds to buy their way into the AI table." }
+                    { title: "Nation-State VC", text: "Sovereign funds (UAE, Saudi, China) are now competing with Silicon Valley VC to secure compute power." }
                 ]
             },
             material: {
                 color: '#22d3ee',
-                label: 'Material Chain',
+                label: 'Supply Chain',
                 flows: [
                     { 
-                        id: 'mat-1',
-                        from: {name: "ASML (Netherlands)", lat: 51.4, lon: 5.4}, 
+                        id: 'mat-1', from: {name: "ASML (Netherlands)", lat: 51.4, lon: 5.4}, 
                         to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, 
-                        desc: "EUV Lithography",
-                        val: "Monopoly",
-                        details: "The most critical flow. Without ASML's EUV machines, no sub-5nm chips (H100s) can be made."
+                        desc: "EUV Monopoly", val: "Critical Node",
+                        details: "The single most critical flow. No ASML EUV machines = No Nvidia H100s. A Dutch monopoly."
                     },
                     { 
-                        id: 'mat-2',
-                        from: {name: "Malaysia (Penang)", lat: 5.4, lon: 100.3}, 
+                        id: 'mat-2', from: {name: "Japan (JSR/Shin-Etsu)", lat: 35.6, lon: 139.6}, 
+                        to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, 
+                        desc: "Photoresists", val: "Chemicals",
+                        details: "Japan controls the market for specialized photoresists used in lithography. Taiwan cannot print chips without Japanese chemicals."
+                    },
+                    { 
+                        id: 'mat-3', from: {name: "Chile (Atacama)", lat: -23.5, lon: -68.0}, 
+                        to: {name: "CATL (China)", lat: 26.0, lon: 119.3}, 
+                        desc: "Lithium Flow", val: "Raw Material",
+                        details: "South American lithium flows to China for battery processing, essential for the energy storage powering AI data centers."
+                    },
+                    { 
+                        id: 'mat-4', from: {name: "Malaysia (Penang)", lat: 5.4, lon: 100.3}, 
                         to: {name: "Global Market", lat: 20.0, lon: 0.0}, 
-                        desc: "Packaging & Testing",
-                        val: "Backend Hub",
-                        details: "Malaysia is the global chokepoint for 'Packaging'—the final step of chip making for Intel/Infineon."
+                        desc: "Packaging Hub", val: "Backend",
+                        details: "Malaysia is the global chokepoint for 'Packaging'—the final assembly step for Intel and AMD chips."
                     },
                     { 
-                        id: 'mat-3',
-                        from: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, 
-                        to: {name: "TSMC (Taiwan)", lat: 23.0, lon: 120.2}, 
-                        desc: "Fabless Dependency",
-                        val: "IP Transfer",
-                        details: "Nvidia sends blueprints, not chips. Reliance on Taiwanese foundries is the primary geopolitical risk."
-                    },
-                    { 
-                        id: 'mat-4',
-                        from: {name: "South Korea (Samsung/SK)", lat: 37.5, lon: 127.0}, 
-                        to: {name: "Nvidia (USA)", lat: 37.3, lon: -121.9}, 
-                        desc: "HBM Memory Flow",
-                        val: "Critical",
-                        details: "AI chips require High Bandwidth Memory (HBM). South Korea holds a near-monopoly on this component."
+                        id: 'mat-5', from: {name: "Foxconn (Zhengzhou)", lat: 34.7, lon: 113.6}, 
+                        to: {name: "Apple/Dell (USA)", lat: 37.7, lon: -122.0}, 
+                        desc: "Server Assembly", val: "Labor",
+                        details: "While chips are made in Taiwan, the actual AI servers are often assembled in China/Vietnam by Foxconn before shipping."
                     }
                 ],
                 intel: [
-                    { title: "The Fragile Chain", text: "The supply chain is hyper-efficient but brittle. A single disruption halts global progress." }
+                    { title: "The Chemical Chokepoint", text: "It's not just chips. Japanese chemicals and Chilean lithium are the hidden base of the AI pyramid." }
                 ]
             },
             law: {
@@ -276,32 +272,38 @@
                 label: 'Regulatory Reach',
                 flows: [
                     { 
-                        id: 'law-1',
-                        from: {name: "EU (Brussels)", lat: 50.8, lon: 4.3}, 
-                        to: {name: "GitHub/Hugging Face", lat: 37.7, lon: -122.4}, 
-                        desc: "GPAI Transparency",
-                        val: "AI Act",
-                        details: "EU AI Act mandates documentation for 'General Purpose AI', forcing US platforms to police compliance."
+                        id: 'law-1', from: {name: "EU (Brussels)", lat: 50.8, lon: 4.3}, 
+                        to: {name: "US Tech", lat: 37.7, lon: -122.4}, 
+                        desc: "Brussels Effect", val: "Compliance",
+                        details: "The EU AI Act forces US companies to alter products globally to maintain access to the European Single Market."
                     },
                     { 
-                        id: 'law-2',
-                        from: {name: "China (Beijing)", lat: 39.9, lon: 116.4}, 
-                        to: {name: "Domestic Devs", lat: 35.0, lon: 105.0}, 
-                        desc: "Generative Measures",
-                        val: "Censorship",
-                        details: "China's 'Interim Measures' ban anonymous contribution, forcing developers to register algorithms."
+                        id: 'law-2', from: {name: "China (CAC)", lat: 39.9, lon: 116.4}, 
+                        to: {name: "Domestic AI", lat: 35.0, lon: 105.0}, 
+                        desc: "Algorithm Registry", val: "Control",
+                        details: "China requires all generative AI to be registered and adhere to socialist core values, creating a bifurcated AI ecosystem."
                     },
                     { 
-                        id: 'law-3',
-                        from: {name: "California (Sacramento)", lat: 38.5, lon: -121.4}, 
-                        to: {name: "US Tech Sector", lat: 37.7, lon: -122.4}, 
-                        desc: "SB 1047 Influence",
-                        val: "Safety",
-                        details: "California's push for safety bills signals potential future liability for open-model releases."
+                        id: 'law-3', from: {name: "Brazil (Brasilia)", lat: -15.8, lon: -47.9}, 
+                        to: {name: "Global Internet", lat: 0.0, lon: -30.0}, 
+                        desc: "Bill 2338", val: "Extraterritorial",
+                        details: "Brazil's draft law applies to anyone processing Brazilian data, creating a new pole of regulation in the Global South."
+                    },
+                    { 
+                        id: 'law-4', from: {name: "UK Safety Inst.", lat: 51.5, lon: -0.1}, 
+                        to: {name: "Foundation Labs", lat: 37.7, lon: -122.4}, 
+                        desc: "Voluntary Testing", val: "Safety",
+                        details: "The UK AISI has secured agreements with OpenAI/Google to pre-test models, exerting soft power influence on safety standards."
+                    },
+                    { 
+                        id: 'law-5', from: {name: "UN (Advisory Body)", lat: 40.7, lon: -74.0}, 
+                        to: {name: "Global Policy", lat: 46.2, lon: 6.1}, 
+                        desc: "Global Governance", val: "Framework",
+                        details: "The UN's push for an 'IPCC for AI' aims to create a unified scientific consensus on AI risks across borders."
                     }
                 ],
                 intel: [
-                    { title: "Regulatory Fragmentation", text: "A 'Splinternet' of AI Law: EU (Rights), China (Stability), US (Security)." }
+                    { title: "Splinternet", text: "Three distinct regulatory blocs: EU (Rights), China (Control), US (Innovation/Security)." }
                 ]
             }
         };
@@ -311,11 +313,11 @@
         function initMap() {
             updateMap(currentMode);
             
-            // Add click listener to the map div
+            // Map Click Handler
             document.getElementById('cross-border-map').on('plotly_click', function(data){
                 const pt = data.points[0];
                 if(pt && pt.data.customdata) {
-                    const flowId = pt.data.customdata;
+                    const flowId = pt.data.customdata[0]; // customdata is array
                     focusSidebarCard(flowId);
                 }
             });
@@ -325,7 +327,7 @@
             currentMode = mode;
             const data = mapData[mode];
             
-            // 1. UI Updates
+            // UI Styling
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-gold', 'active-red', 'active-cyan', 'active-purple'));
             const activeClass = mode === 'capital' ? 'active-gold' : mode === 'law' ? 'active-red' : mode === 'material' ? 'active-cyan' : 'active-purple';
             document.getElementById(`btn-${mode}`).classList.add(activeClass);
@@ -338,10 +340,9 @@
 
             renderIntel(data);
 
-            // 2. Plotly Construction
             const traces = [];
 
-            // A. Flow Lines
+            // 1. Flow Lines
             data.flows.forEach(flow => {
                 traces.push({
                     type: 'scattergeo',
@@ -349,40 +350,57 @@
                     lat: [flow.from.lat, flow.to.lat],
                     lon: [flow.from.lon, flow.to.lon],
                     mode: 'lines',
-                    line: { width: 2, color: data.color },
-                    opacity: 0.6,
+                    line: { width: 1.5, color: data.color },
+                    opacity: 0.5,
                     hoverinfo: 'text',
-                    text: flow.desc,
-                    customdata: [flow.id, flow.id] // Pass ID to click handler
+                    text: `${flow.desc}: ${flow.from.name} -> ${flow.to.name}`,
+                    customdata: [flow.id, flow.id] 
                 });
 
-                // End Marker (Arrow head)
+                // Arrow Head
                 traces.push({
                     type: 'scattergeo',
                     lat: [flow.to.lat],
                     lon: [flow.to.lon],
                     mode: 'markers',
-                    marker: { size: 6, color: data.color, symbol: 'triangle-up' },
+                    marker: { size: 5, color: data.color, symbol: 'triangle-up' },
                     hoverinfo: 'none',
                     customdata: [flow.id]
                 });
             });
 
-            // B. Nodes (Bubbles)
+            // 2. Nodes
+            const uniqueNodes = new Map();
             data.flows.forEach(f => {
-                // From Node
-                traces.push({
-                    type: 'scattergeo',
-                    lat: [f.from.lat],
-                    lon: [f.from.lon],
-                    mode: 'markers+text',
-                    text: [f.from.name],
-                    textposition: 'top center',
-                    marker: { size: 8, color: '#ffffff', line: {color: data.color, width: 2} },
-                    textfont: { color: '#cbd5e1', size: 9, family: 'Inter' },
-                    hoverinfo: 'text',
-                    customdata: [f.id] // Link node to its primary flow
-                });
+                uniqueNodes.set(f.from.name, f.from);
+                uniqueNodes.set(f.to.name, f.to);
+            });
+
+            const nodeLat = [], nodeLon = [], nodeText = [], nodeIds = [];
+            uniqueNodes.forEach((n, name) => {
+                nodeLat.push(n.lat);
+                nodeLon.push(n.lon);
+                nodeText.push(n.name);
+                // Find a flow ID associated with this node for click handling
+                const relatedFlow = data.flows.find(f => f.from.name === name || f.to.name === name);
+                nodeIds.push(relatedFlow ? relatedFlow.id : null);
+            });
+
+            traces.push({
+                type: 'scattergeo',
+                lat: nodeLat,
+                lon: nodeLon,
+                mode: 'markers+text',
+                text: nodeText,
+                textposition: 'top center',
+                marker: {
+                    size: 6,
+                    color: '#ffffff',
+                    line: {color: data.color, width: 2}
+                },
+                textfont: { color: '#cbd5e1', size: 9, family: 'Inter' },
+                hoverinfo: 'text',
+                customdata: nodeIds
             });
 
             const layout = {
@@ -421,14 +439,14 @@
                 <div id="card-${f.id}" onclick="flyToFlow('${f.id}', ${f.from.lat}, ${f.from.lon}, ${f.to.lat}, ${f.to.lon})" 
                      class="flow-card bg-black/40 rounded-lg p-3 border-l-2 hover:bg-white/5 cursor-pointer relative overflow-hidden group" 
                      style="border-color: ${data.color}">
-                    
+                     
                     <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <i class="fa-solid fa-crosshairs text-slate-500 text-xs"></i>
                     </div>
 
                     <div class="flex justify-between items-start mb-1 pr-4">
-                        <span class="text-xs font-bold text-white">${f.from.name}</span>
-                        <span class="text-[9px] font-mono text-slate-300 bg-white/10 px-1 rounded">${f.val}</span>
+                        <span class="text-xs font-bold text-white truncate max-w-[70%]">${f.from.name}</span>
+                        <span class="text-[9px] font-mono text-slate-300 bg-white/10 px-1 rounded whitespace-nowrap">${f.val}</span>
                     </div>
                     <div class="text-[9px] text-slate-500 mb-1 flex items-center gap-1">
                         <i class="fa-solid fa-arrow-down"></i> ${f.to.name}
@@ -452,43 +470,24 @@
             `;
         }
 
-        // --- Interaction Logic ---
-
-        // 1. Sidebar Click -> Map Rotate
         function flyToFlow(id, lat1, lon1, lat2, lon2) {
-            // Highlight Card
             document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('active-card'));
             const card = document.getElementById(`card-${id}`);
             if(card) card.classList.add('active-card');
 
-            // Calculate Center Point for View
             const centerLon = (lon1 + lon2) / 2;
             const centerLat = (lat1 + lat2) / 2;
 
-            // Animate Globe
             Plotly.animate('cross-border-map', {
-                layout: {
-                    geo: {
-                        projection: {
-                            rotation: { lon: centerLon, lat: centerLat }
-                        }
-                    }
-                }
-            }, {
-                transition: { duration: 1500, easing: 'cubic-in-out' },
-                frame: { duration: 1500 }
-            });
+                layout: { geo: { projection: { rotation: { lon: centerLon, lat: centerLat } } } }
+            }, { transition: { duration: 1500, easing: 'cubic-in-out' }, frame: { duration: 1500 } });
         }
 
-        // 2. Map Click -> Sidebar Scroll
         function focusSidebarCard(flowId) {
             const card = document.getElementById(`card-${flowId}`);
             if(card) {
-                // Highlight
                 document.querySelectorAll('.flow-card').forEach(c => c.classList.remove('active-card'));
                 card.classList.add('active-card');
-                
-                // Scroll
                 card.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }
